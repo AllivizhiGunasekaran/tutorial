@@ -1,0 +1,3052 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf340
+{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fnil\fcharset0 Menlo-Bold;\f2\fnil\fcharset0 Menlo-Regular;
+}
+{\colortbl;\red255\green255\blue255;\red21\green1\blue113;\red112\green44\blue81;\red38\green44\blue106;
+\red71\green106\blue151;\red70\green154\blue233;\red18\green19\blue159;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab674
+\pard\tx674\pardeftab674\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \CocoaLigature0 Fanthem\
+\
+Twitter and Instagram\
+Message(SMS) - Fixed\
+Prepare build and test notification\
+Submit new build to iTunes Connect and iOS App Store\
+\
+Back endless\
+\
+\
+\
+1. In clip page, can\'92t able to share with twitter and instagram. (this is due to updated version of iOS) \'97> changed the code to make it work - Time spent - 3 hours (We found this bug in live app Version - 1.0.4)\
+\
+2. right now it shows Mobile Contacts first, I want it to default to show Fanthem App User list first \'97> Fixed \
+\
+3. when you tap on them it kicks you out of the app \'97> Fixed\
+\
+4. Article page Zoom \'97> Fixed\
+\
+5. Following two points are the new changes made to the app:\
+\
+1). Why is the Facebook share feature for articles different than for clips? It looks like for articles it is more advanced? Is this correct?\
+\
+(2). When I share an article, video, webrant, or audio file, why can it share it to a friend as well?\
+\
+(i). We have to send notification to the user whom we are choosing in fanthemAppUser list, if the user chooses the notification, then the corresponding(Article, Audio, Video) has to be displayed\
+\
+(ii). Web service for sharing the article, audio and video and for notification service \
+\
+(iii). To add Share With Friends options in Article, Audio and Video page\
+\
+\
+Submission of app to iOS App Store - 4 hours(Includes testing and submission process).\
+\
+\
+\
+\pard\tx674\pardeftab674\pardirnatural\partightenfactor0
+
+\f1\b\fs22 \cf0 7] *** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: '*** -[NSURL initFileURLWithPath:]: nil string parameter'
+\f0\b0\fs24 \
+\
+\'97\'97\'97\'97\'97\'97\
+\
+\pard\tx674\pardeftab674\pardirnatural\partightenfactor0
+
+\f2\fs28 \cf0 \
+\pard\tx674\pardeftab674\pardirnatural\partightenfactor0
+\cf2 //  Homepage.m\cf0 \
+\cf2 //  Fanthem\cf0 \
+\cf2 //\cf0 \
+\cf2 //  Created by Administrator on 29/05/14.\cf0 \
+\cf2 //  Copyright (c) 2014 Administrator. All rights reserved.\cf0 \
+\cf2 //\cf0 \
+\
+\cf2 //#import "Homepage.h"\cf0 \
+\cf2 //#import "WebRants.h"\cf0 \
+\cf2 //#import "AppDelegate.h"\cf0 \
+\cf2 //#import "Homepagecustomcell.h"\cf0 \
+\cf2 //#import "UIImageView+WebCache.h"\cf0 \
+\cf2 //#import "SDWebImageManager.h"\cf0 \
+\cf2 //#import "KZCameraView.h"\cf0 \
+\cf2 //#import "Access.h"\cf0 \
+\cf2 //#import "AccessMicrophone.h"\cf0 \
+\cf2 //#include "Profilepage.h"\cf0 \
+\cf2 //#import "VideosPage.h"\cf0 \
+\cf2 //#import "Articlepage.h"\cf0 \
+\cf2 //#import "Webview.h"\cf0 \
+\cf2 //#import "ChangePassword.h"\cf0 \
+\cf2 //#import "DiscoverPage.h"\cf0 \
+\cf2 //#import "Homepage.h"\cf0 \
+\cf2 //#import "Activitypage.h"\cf0 \
+\cf2 //#import "LoginFb.h"\cf0 \
+\cf2 //#import "HuddleListViewController.h"\cf0 \
+\cf2 //#import "Homepagecustomcell.h"\cf0 \
+\cf2 //#import <QuartzCore/QuartzCore.h>\cf0 \
+\cf2 //#import "CommentsViewController.h"\cf0 \
+\cf2 //#import "AudioPage.h"\cf0 \
+\cf2 //#import "PBJViewController.h"\cf0 \
+\cf2 //#import <FacebookSDK/FacebookSDK.h>\cf0 \
+\cf2 //#import "MyActivityItemProvider.h"\cf0 \
+\cf2 //#import <FBSDKCoreKit/FBSDKCoreKit.h>\cf0 \
+\cf2 //#import <FBSDKLoginKit/FBSDKLoginKit.h>\cf0 \
+\cf2 //\cf0 \
+#import \cf3 "FBCommentsViewController.h"\cf0 \
+#import \cf3 <TwitterKit/TwitterKit.h>\cf0 \
+\
+\cf2 //#import <Fabric/Fabric.h>\cf0 \
+\cf2 //#import "InviteFriendsViewController.h"\cf0 \
+\cf2 //#import <AddressBook/AddressBook.h>\cf0 \
+\cf2 //#import <AddressBook/ABAddressBook.h>\cf0 \
+\cf2 //#import <AddressBook/ABPerson.h>\cf0 \
+\cf2 //#import "UINavigationController+TRVSNavigationControllerTransition.h"\cf0 \
+\cf2 //\cf0 \
+\cf2 //#import <AVFoundation/AVFoundation.h>\cf0 \
+\cf2 //#import <MessageUI/MFMessageComposeViewController.h>\cf0 \
+\cf2 //#import <CoreTelephony/CTTelephonyNetworkInfo.h>\cf0 \
+\cf2 //#import "NotificationView.h"\cf0 \
+\
+\cf4 @interface\cf0  Homepage ()<MFMessageComposeViewControllerDelegate>\
+\{\
+    ABAddressBookRef add;\
+    NSMutableArray * contactList;\
+\}\
+\cf4 @property\cf0  (\cf4 nonatomic\cf0 , \cf4 strong\cf0 ) KZCameraView *cam;\
+\cf4 @property\cf0 (\cf4 nonatomic\cf0 , \cf4 retain\cf0 ) Homepagecustomcell *cell1;\
+\
+\
+\cf4 @end\cf0 \
+\
+\cf4 @implementation\cf0  Homepage\
+\cf4 @synthesize\cf0  toolBar1, toolBar2, view1, view2, view4, subTable, mainTable, menuList, menuImageList, mscrollview, content, thirdView, profileButton, menuList1, menuImageList1, toolbarView, moviePlayer,cell1, arrrantid;\
+\
+\cf4 @synthesize\cf0  arrpostcontent_video,arrimageurl,arrposttitle,arrcommentscount,arrviewscount,arrprofileimage, activity_menu;\
+\
+- (\cf4 id\cf0 )initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil\
+\{\
+    \cf4 self\cf0  = [\cf4 super\cf0  initWithNibName:nibNameOrNil bundle:nibBundleOrNil];\
+    \cf4 if\cf0  (\cf4 self\cf0 )\
+    \{\
+        \
+    \}\
+    \cf4 return\cf0  \cf4 self\cf0 ;\
+\}\
+\
+\
+#pragma mark - ViewDidLoad\
+\
+- (\cf4 void\cf0 )viewDidLoad\
+\{\
+    [\cf4 super\cf0  viewDidLoad];\
+    \
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    [\cf4 self\cf0 .navigationController setNavigationBarHidden:\cf4 YES\cf0  animated:\cf4 YES\cf0 ];\
+    [app ShowLoaderWithText:\cf3 @""\cf0  detail:\cf3 @"Loading..."\cf0 ];\
+    shareVideo = \cf3 @"twitter"\cf0 ;\
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];\
+    [refreshControl addTarget:\cf4 self\cf0  action:\cf4 @selector\cf0 (refresh:) forControlEvents:UIControlEventValueChanged];\
+    [\cf4 self\cf0 .mainTable addSubview:refreshControl];\
+    \
+    start = \cf4 0\cf0 ;\
+    end = \cf4 10\cf0 ;    \
+    i = \cf4 10\cf0 ;\
+    \
+    shareOptions = [[NSMutableArray alloc]initWithObjects:\cf3 @"Facebook"\cf0 , \cf3 @"Twitter"\cf0 , \cf3 @"Instagram"\cf0 , \cf4 nil\cf0 ];    \
+    \
+    add = ABAddressBookCreateWithOptions(\cf4 nil\cf0 , \cf4 nil\cf0 );\
+    NSLog(\cf3 @"%ld"\cf0 , ABAddressBookGetAuthorizationStatus());\
+    \cf4 if\cf0  (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) \{\
+        ABAddressBookRequestAccessWithCompletion(add, ^(\cf4 bool\cf0  granted, CFErrorRef error) \{\
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, \cf4 0\cf0 ), ^\{\
+                \cf4 if\cf0  (granted)\
+                \{\
+                    dispatch_async(dispatch_get_main_queue(), ^\{\
+                       \
+                        [\cf4 self\cf0  getContactsWithAddressBook:add];\
+                    \});\
+                \}\
+                \cf4 else\cf0 \
+                \{\
+\cf2 //                    UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"Please allow access to your Contacts\\n This allows Fanthem to access your contacts" message:@"1.Open settings\\n 2. Tap Fanthem\\n 3. Set Contacts to ON" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:@"Cancel", nil];\cf0 \
+\cf2 //                    alert.tag = 30;\cf0 \
+\cf2 //                    [alert show];\cf0 \
+                \}\
+            \});\
+        \});\
+    \}\
+    \
+    \cf4 else\cf0  \cf4 if\cf0 (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)\
+    \{\
+        [\cf4 self\cf0  getContactsWithAddressBook:add];\
+    \}\
+    \
+    \cf4 else\cf0  \cf4 if\cf0 ((ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusDenied) || (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusRestricted))\
+    \{\
+\cf2 //        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"Please allow access to your Contacts\\n This allows Fanthem to access your contacts" message:@"1.Open settings\\n 2. Tap Fanthem\\n 3. Set Contacts to ON" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:@"Cancel", nil];\cf0 \
+\cf2 //        alert.tag = 30;\cf0 \
+\cf2 //        [alert show];\cf0 \
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        \
+    \}\
+    \
+    valuedict=[[NSDictionary alloc]init];\
+    \
+    arrcommentscount=[[NSMutableArray alloc]init];\
+    arrimageurl=[[NSMutableArray alloc]init];\
+    arrpostcontent_video=[[NSMutableArray alloc]init];\
+    arrposttitle=[[NSMutableArray alloc]init];\
+    arrviewscount=[[NSMutableArray alloc]init];\
+    arrlikecount=[[NSMutableArray alloc]init];\
+    arrauthor_name=[[NSMutableArray alloc]init];\
+    arrauthorid=[[NSMutableArray alloc]init];\
+    arrprofileimage=[[NSMutableArray alloc]init];\
+    arrtimesince=[[NSMutableArray alloc]init];\
+    arrrantid = [[NSMutableArray alloc]init];\
+    arrflagarray = [[NSMutableArray alloc]init];\
+    arrlikearray = [[NSMutableArray alloc]init];\
+    arrdescarray = [[NSMutableArray alloc]init];\
+\
+    NSLog(\cf3 @"%@ %@"\cf0 , mainTable.dataSource, mainTable.delegate);\
+    \
+    \cf4 self\cf0 .mainTable.dataSource = \cf4 self\cf0 ;\
+    \cf4 self\cf0 .mainTable.delegate = \cf4 self\cf0 ;\
+    \
+    NSLog(\cf3 @"%@ %@"\cf0 , mainTable.dataSource, mainTable.delegate);\
+    [[UIApplication sharedApplication]setStatusBarHidden:\cf4 YES\cf0  withAnimation:UIStatusBarAnimationNone];\
+    \
+    UIColor *background = [[UIColor alloc] initWithPatternImage:[UIImage imageNamed:\cf3 @"lat.png"\cf0 ]];\
+    \cf4 self\cf0 .mscrollview.backgroundColor = background;\
+    \
+    \
+    \cf4 self\cf0 .toolbarView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:\cf3 @"r_bg.png"\cf0 ]];\
+    toolBar1.barStyle = -\cf4 1\cf0 ;\
+    toolBar1.clipsToBounds = \cf4 YES\cf0 ;\
+    \
+    \
+    \cf4 self\cf0 .view4.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:\cf3 @"tool.png"\cf0 ]];\
+    content.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:\cf3 @"lat.png"\cf0 ]];\
+    toolBar2.barStyle = -\cf4 1\cf0 ;\
+ \
+    subTable.hidden = \cf4 YES\cf0 ;\
+    menuBool = \cf4 YES\cf0 ;\
+    user = [NSUserDefaults standardUserDefaults];\
+    NSLog(\cf3 @"USER TYPE - %@ - %@"\cf0 , [user objectForKey:\cf3 @"user"\cf0 ], [user objectForKey:\cf3 @"user_role"\cf0 ]);\
+    \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"app_user"\cf0 ])\
+    \{\
+        NSLog(\cf3 @"App Delegate Fanthem User"\cf0 );\
+        menuImageList = [[NSMutableArray alloc]initWithObjects:\cf3 @"icon-notifi.png"\cf0 , \cf3 @"home.png"\cf0 , \cf3 @"discover.png"\cf0 , \cf3 @"articles.png"\cf0 , \cf3 @"activity.png"\cf0 , \cf3 @"videos.png"\cf0 , \cf3 @"audio.png"\cf0 , \cf3 @"webclips.png"\cf0 , \cf3 @"share.png"\cf0 , \cf3 @"logout.png"\cf0 , \cf4 nil\cf0 ];\
+        menuList = [[NSMutableArray alloc]initWithObjects:\cf3 @"Notifications"\cf0 , \cf3 @"Home"\cf0 , \cf3 @"Search"\cf0 , \cf3 @"Articles"\cf0 , \cf3 @"MyActivity"\cf0 , \cf3 @"Videos"\cf0 , \cf3 @"Audio"\cf0 , \cf3 @"WebRants"\cf0 ,  \cf3 @"Share"\cf0 , \cf3 @"Logout"\cf0 ,\cf4 nil\cf0 ];\
+    \}\
+    \
+    \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"facebook_user"\cf0 ])\
+    \{\
+        NSLog(\cf3 @"AppDelegate FACEBOOK USER"\cf0 );\
+        menuImageList1 = [[NSMutableArray alloc]initWithObjects:\cf3 @"icon-notifi.png"\cf0 , \cf3 @"home.png"\cf0 , \cf3 @"discover.png"\cf0 , \cf3 @"articles.png"\cf0 , \cf3 @"activity.png"\cf0 , \cf3 @"videos.png"\cf0 , \cf3 @"audio.png"\cf0 , \cf3 @"webclips.png"\cf0 , \cf3 @"share.png"\cf0 , \cf3 @"logout.png"\cf0 , \cf4 nil\cf0 ];\
+        menuList1 = [[NSMutableArray alloc]initWithObjects:\cf3 @"Notifications"\cf0 , \cf3 @"Home"\cf0 ,\cf3 @"Search"\cf0 ,\cf3 @"Articles"\cf0 ,\cf3 @"MyActivity"\cf0 ,\cf3 @"Videos"\cf0 , \cf3 @"Audio"\cf0 , \cf3 @"WebRants"\cf0 , \cf3 @"Share"\cf0 , \cf3 @"Logout"\cf0 ,\cf4 nil\cf0 ];\
+    \}\
+    \
+    \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"twitter_user"\cf0 ])\
+    \{\
+        NSLog(\cf3 @"AppDelegate Twitter USER"\cf0 );\
+        menuImageList1 = [[NSMutableArray alloc]initWithObjects:\cf3 @"icon-notifi.png"\cf0 , \cf3 @"home.png"\cf0 , \cf3 @"discover.png"\cf0 , \cf3 @"articles.png"\cf0 , \cf3 @"activity.png"\cf0 , \cf3 @"videos.png"\cf0 , \cf3 @"audio.png"\cf0 , \cf3 @"webclips.png"\cf0 , \cf3 @"share.png"\cf0 , \cf3 @"logout.png"\cf0 , \cf4 nil\cf0 ];\
+        menuList1 = [[NSMutableArray alloc]initWithObjects:\cf3 @"Notifications"\cf0 , \cf3 @"Home"\cf0 ,\cf3 @"Search"\cf0 ,\cf3 @"Articles"\cf0 ,\cf3 @"MyActivity"\cf0 ,\cf3 @"Videos"\cf0 , \cf3 @"Audio"\cf0 , \cf3 @"WebRants"\cf0 , \cf3 @"Share"\cf0 , \cf3 @"Logout"\cf0 ,\cf4 nil\cf0 ];\
+    \}\
+    \
+    \
+    UISwipeGestureRecognizer *swipeLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:\cf4 self\cf0  action:\cf4 @selector\cf0 (handleSwipeLeft:)];\
+    [swipeLeft setDirection:UISwipeGestureRecognizerDirectionLeft];\
+    [\cf4 self\cf0 .view addGestureRecognizer:swipeLeft];\
+    \
+    UISwipeGestureRecognizer *swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:\cf4 self\cf0  action:\cf4 @selector\cf0 (handleSwipeRight:)];\
+    [swipeRight setDirection:UISwipeGestureRecognizerDirectionRight];\
+    [\cf4 self\cf0 .view addGestureRecognizer:swipeRight];\
+    \
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:\cf4 self\cf0  action:\cf4 @selector\cf0 (hideMenu)];\
+    tap.delegate = \cf4 self\cf0 ;\
+    tap.numberOfTapsRequired = \cf4 1\cf0 ;\
+    [mainTable addGestureRecognizer:tap];\
+    \
+    UITapGestureRecognizer *tap5 = [[UITapGestureRecognizer alloc] initWithTarget:\cf4 self\cf0  action:\cf4 @selector\cf0 (hideMenu)];\
+    tap5.delegate = \cf4 self\cf0 ;\
+    tap5.numberOfTapsRequired = \cf4 1\cf0 ;\
+    [subTable addGestureRecognizer:tap5];\
+    \
+    \
+    initial = \cf4 0\cf0 ;\
+    touchhome_btn=\cf4 YES\cf0 ;\
+    \
+    \cf4 self\cf0 .thirdView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:\cf3 @"menuview_bkgrdiphone.png"\cf0 ]];\
+    \
+    emailuser_lbl.text = [user objectForKey:\cf3 @"email"\cf0 ];\
+    emailuser_lbl.textColor = [UIColor whiteColor];\
+    username_lbl.text = [user objectForKey:\cf3 @"profile_name"\cf0 ];\
+    username_lbl.textColor = [UIColor whiteColor];\
+    \
+    activity_home.hidden=\cf4 YES\cf0 ;\
+    [activity_home stopAnimating];\
+    \
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, \cf4 0\cf0 ), ^\{\
+    NSLog(\cf3 @"Profile image - %@"\cf0 ,  [user objectForKey:\cf3 @"profile_image"\cf0 ]);\
+    \
+    dispatch_async(dispatch_get_main_queue(),^\{\
+        NSData *mydata1 = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:[user objectForKey:\cf3 @"profile_image"\cf0 ]]];\
+        UIImage *myimage1 = [[UIImage alloc] initWithData:mydata1];\
+        \
+                [profile_image setImage:myimage1];\
+                profile_image.layer.borderColor=[UIColor whiteColor].CGColor;\
+                UIColor *borderColor = [UIColor colorWithRed:\cf4 182\cf0  green:\cf4 10\cf0  blue:\cf4 96\cf0  alpha:\cf4 1.0\cf0 ];\
+                [profile_image.layer setBorderColor:borderColor.CGColor];\
+        \
+                profile_image.layer.cornerRadius = profile_image.frame.size.height / \cf4 2\cf0 ;\
+                profile_image.layer.borderWidth = \cf4 2.0f\cf0 ;\
+                profile_image.clipsToBounds = \cf4 YES\cf0 ;\
+            \});\
+    \});\
+   NSLog(\cf3 @"%@%@%@ TTETE"\cf0 , emailuser_lbl.text, username_lbl.text, profile_image);\
+   Dict_name = [[NSMutableDictionary alloc] init];\
+   [\cf4 self\cf0  servicecalling];\
+	\cf2 // Do any additional setup after loading the view.\cf0 \
+\}\
+\
+\
+#pragma mark - ViewDidAppear\
+-(\cf4 void\cf0 )viewDidAppear:(\cf4 BOOL\cf0 )animated\
+\{\
+    [\cf4 super\cf0  viewDidAppear:\cf4 YES\cf0 ];\
+    NSLog(\cf3 @"Initial - %d"\cf0 , initial);\
+    \cf4 if\cf0 (initial != \cf4 0\cf0 )\
+    \{\
+        [\cf4 self\cf0  refreshStart];\
+    \}\
+    initial = \cf4 1\cf0 ;\
+\}\
+\
+\
+#pragma mark - StatusBarStyle\
+- (UIStatusBarStyle)preferredStatusBarStyle\
+\{\
+    \cf4 return\cf0  UIStatusBarStyleLightContent;\
+\}\
+\
+\
+#pragma mark - Refresh\
+- (\cf4 void\cf0 )refresh:(UIRefreshControl *)refreshControl\
+\{\
+    \cf2 // Do your job, when done:\cf0 \
+    [\cf4 self\cf0  refreshStart];\
+    [refreshControl endRefreshing];\
+\}\
+\
+\
+-(\cf4 void\cf0 )refreshStart\
+\{\
+    arrcommentscount=[[NSMutableArray alloc]init];\
+    arrimageurl=[[NSMutableArray alloc]init];\
+    arrpostcontent_video=[[NSMutableArray alloc]init];\
+    arrposttitle=[[NSMutableArray alloc]init];\
+    arrviewscount=[[NSMutableArray alloc]init];\
+    \cf5 arrlikecount\cf0 =[[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 arrauthor_name\cf0 =[[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 arrauthorid\cf0 =[[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 arrprofileimage\cf0 =[[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 arrtimesince\cf0 =[[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 arrrantid\cf0  = [[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 arrflagarray\cf0  = [[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 arrlikearray\cf0  = [[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 arrdescarray\cf0  = [[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ]\cf5 init\cf0 ];\
+    \cf5 start\cf0  = \cf4 0\cf0 ;\
+    [\cf4 self\cf0  \cf6 servicecalling\cf0 ];\
+\}\
+\
+\
+#pragma mark - AddressBook\
+- (\cf4 void\cf0 )getContactsWithAddressBook:(\cf5 ABAddressBookRef\cf0  )addressBook\
+\{\
+    \cf5 AppDelegate\cf0  * app = [[\cf5 UIApplication\cf0  \cf5 sharedApplication\cf0 ]\cf5 delegate\cf0 ];\
+    \cf2 //dispatch_async(dispatch_get_main_queue(), ^\{\cf0 \
+    \cf5 contactList\cf0  = [[\cf5 NSMutableArray\cf0  \cf5 alloc\cf0 ] \cf5 init\cf0 ];\
+    \cf5 CFArrayRef\cf0  allPeople = \cf5 ABAddressBookCopyArrayOfAllPeople\cf0 (addressBook);\
+    \cf5 CFIndex\cf0  nPeople = \cf5 ABAddressBookGetPersonCount\cf0 (addressBook);\
+    \
+    \cf4 for\cf0  (\cf4 int\cf0  k=\cf4 0\cf0 ; k < nPeople; k++)\
+    \{\
+        \cf5 dOfPerson\cf0 =[\cf5 NSMutableDictionary\cf0  \cf5 dictionary\cf0 ];\
+        \cf5 ABRecordRef\cf0  ref = \cf5 CFArrayGetValueAtIndex\cf0 (allPeople,k);\
+        \
+        \cf2 //For username\cf0 \
+        \cf5 ABMultiValueRef\cf0  phones =(\cf4 __bridge\cf0  \cf5 ABMultiValueRef\cf0 )((\cf4 __bridge\cf0  \cf5 NSString\cf0 *)\cf5 ABRecordCopyValue\cf0 (ref, \cf5 kABPersonPhoneProperty\cf0 ));\
+        \
+        \cf5 CFStringRef\cf0  firstName, lastName;\
+        firstName = \cf5 ABRecordCopyValue\cf0 (ref, \cf5 kABPersonFirstNameProperty\cf0 );\
+        lastName  = \cf5 ABRecordCopyValue\cf0 (ref, \cf5 kABPersonLastNameProperty\cf0 );\
+        \
+        \cf4 if\cf0 (lastName == \cf4 nil\cf0 )\
+        \{\
+            \cf5 NSLog\cf0 (\cf3 @"nil"\cf0 );\
+            [\cf5 dOfPerson\cf0  \cf5 setObject\cf0 :[\cf5 NSString\cf0  \cf5 stringWithFormat\cf0 :\cf3 @"%@"\cf0 , firstName] \cf5 forKey\cf0 :\cf3 @"name"\cf0 ];\
+        \}\
+        \cf4 else\cf0  \cf4 if\cf0  (firstName == \cf4 nil\cf0 )\
+        \{\
+            \cf5 NSLog\cf0 (\cf3 @"nil"\cf0 );\
+            [\cf5 dOfPerson\cf0  \cf5 setObject\cf0 :[\cf5 NSString\cf0  \cf5 stringWithFormat\cf0 :\cf3 @"%@"\cf0 , lastName] \cf5 forKey\cf0 :\cf3 @"name"\cf0 ];\
+        \}\
+        \cf4 else\cf0 \
+        \{\
+            [\cf5 dOfPerson\cf0  \cf5 setObject\cf0 :[\cf5 NSString\cf0  \cf5 stringWithFormat\cf0 :\cf3 @"%@ %@"\cf0 , firstName, lastName] \cf5 forKey\cf0 :\cf3 @"name"\cf0 ];\
+        \}\
+        \
+        \
+        \cf2 //For Phone number\cf0 \
+        \cf5 NSString\cf0 * mobileLabel;\
+        \
+        \cf4 for\cf0 (\cf5 CFIndex\cf0  k = \cf4 0\cf0 ; k < \cf5 ABMultiValueGetCount\cf0 (phones); k++)\
+        \{\
+            mobileLabel = (\cf4 __bridge\cf0  \cf5 NSString\cf0 *)\cf5 ABMultiValueCopyLabelAtIndex\cf0 (phones, k);\
+            \cf5 NSLog\cf0 (\cf3 @"Mobile Contacts %@"\cf0 , mobileLabel);\
+            \cf4 if\cf0 ([mobileLabel \cf5 isEqualToString\cf0 :(\cf5 NSString\cf0  *)\cf5 kABPersonPhoneMobileLabel\cf0 ])\
+            \{\
+                [\cf5 dOfPerson\cf0  \cf5 setObject\cf0 :(\cf4 __bridge\cf0  \cf5 NSString\cf0 *)\cf5 ABMultiValueCopyValueAtIndex\cf0 (phones, k) \cf5 forKey\cf0 :\cf3 @"Phone"\cf0 ];\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([mobileLabel \cf5 isEqualToString\cf0 :(\cf5 NSString\cf0 *)\cf5 kABPersonPhoneIPhoneLabel\cf0 ])\
+            \{\
+                [\cf5 dOfPerson\cf0  \cf5 setObject\cf0 :(\cf4 __bridge\cf0  \cf5 NSString\cf0 *)\cf5 ABMultiValueCopyValueAtIndex\cf0 (phones, k) \cf5 forKey\cf0 :\cf3 @"Phone"\cf0 ];\
+                \cf4 break\cf0  ;\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([mobileLabel \cf5 isEqualToString\cf0 :(\cf5 NSString\cf0 *)\cf5 kABPersonPhoneMainLabel\cf0 ])\
+            \{\
+                [\cf5 dOfPerson\cf0  \cf5 setObject\cf0 :(\cf4 __bridge\cf0  \cf5 NSString\cf0 *)\cf5 ABMultiValueCopyValueAtIndex\cf0 (phones, k) \cf5 forKey\cf0 :\cf3 @"Phone"\cf0 ];\
+                \cf4 break\cf0  ;\
+            \}\
+        \}\
+        \cf4 if\cf0 ([\cf5 dOfPerson\cf0  \cf5 valueForKey\cf0 :\cf3 @"Phone"\cf0 ])\
+        \{\
+            [\cf5 contactList\cf0  \cf5 addObject\cf0 :\cf5 dOfPerson\cf0 ];\
+            app.\cf5 phoneNumber\cf0  = [\cf5 contactList\cf0  \cf5 valueForKey\cf0 :\cf3 @"Phone"\cf0 ];\
+            app.\cf5 addContacts\cf0  = [\cf5 contactList\cf0  \cf5 valueForKey\cf0 :\cf3 @"name"\cf0 ];\
+        \}\
+        \cf4 else\cf0 \
+        \{\
+            \
+        \}\
+    \}\
+    \cf5 NSLog\cf0 (\cf3 @"%@"\cf0 , \cf5 dOfPerson\cf0 );\
+    \cf5 NSMutableDictionary\cf0  * set = [[\cf5 NSMutableDictionary\cf0  \cf5 alloc\cf0 ]\cf5 initWithObjects\cf0 :app.\cf5 phoneNumber\cf0  \cf5 forKeys\cf0 :app.\cf5 addContacts\cf0 ];\
+    app.\cf5 set\cf0  = set;\
+\}\
+\
+\
+#pragma mark - Share\
+-(\cf4 IBAction\cf0 )share:(\cf4 id\cf0 )sender\
+\{\
+    \cf5 UIActionSheet\cf0   * popup = [[\cf5 UIActionSheet\cf0  \cf5 alloc\cf0 ] \cf5 initWithTitle\cf0 :\cf3 @"Select Sharing option:"\cf0  \cf5 delegate\cf0 :\cf4 self\cf0  \cf5 cancelButtonTitle\cf0 :\cf3 @"Cancel"\cf0  \cf5 destructiveButtonTitle\cf0 :\cf4 nil\cf0  \cf5 otherButtonTitles\cf0 :\
+                            \cf3 @"Share on Facebook"\cf0 ,\
+                            \cf3 @"Share on Twitter"\cf0 ,\
+                            \cf3 @"Share on Instagram"\cf0 ,\
+                            \cf3 @"Share with Friends"\cf0 ,\
+                            \cf4 nil\cf0 ];\
+    popup.\cf5 tag\cf0  = \cf4 1\cf0 ;\
+    \
+    \cf4 if\cf0 ([\cf5 deviceModel\cf0  \cf5 isEqualToString\cf0 :\cf3 @"iPad"\cf0 ])\
+    \{\
+        [popup \cf5 showFromRect\cf0 :\cf5 cell1\cf0 .\cf5 shareButton\cf0 .\cf5 frame\cf0  \cf5 inView\cf0 :\cf4 self\cf0 .\cf5 view\cf0  \cf5 animated\cf0 :\cf4 YES\cf0 ];\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        [popup \cf5 showInView\cf0 :[\cf5 UIApplication\cf0  \cf5 sharedApplication\cf0 ].\cf5 keyWindow\cf0 ];\
+    \}\
+\}\
+\
+\
+- (\cf5 NSString\cf0  *)deviceModel\
+\{\
+    \cf4 struct\cf0  \cf5 utsname\cf0  systemInfo;\
+    \cf5 uname\cf0 (&systemInfo);\
+    \cf5 NSLog\cf0 (\cf3 @"%@"\cf0 , [\cf5 NSString\cf0  \cf5 stringWithCString\cf0 :systemInfo.\cf5 machine\cf0  \cf5 encoding\cf0 :\cf5 NSUTF8StringEncoding\cf0 ]);\
+    \cf5 NSArray\cf0  * myArray = [[\cf5 NSString\cf0  \cf5 stringWithCString\cf0 :systemInfo.\cf5 machine\cf0  \cf5 encoding\cf0 :\cf5 NSUTF8StringEncoding\cf0 ] \cf5 componentsSeparatedByString\cf0 :\cf3 @","\cf0 ];\
+    \cf5 NSLog\cf0 (\cf3 @"%@"\cf0 , myArray);\
+    [myArray \cf5 objectAtIndex\cf0 :\cf4 0\cf0 ];\
+    \cf2 // [myArray objectAtIndex:1];\cf0 \
+    \cf5 NSLog\cf0 (\cf3 @"Device model first item - %@"\cf0 , [myArray \cf5 objectAtIndex\cf0 :\cf4 0\cf0 ]);\
+    \
+    \cf5 deviceModel\cf0  = [myArray \cf5 objectAtIndex\cf0 :\cf4 0\cf0 ];\
+    \cf4 return\cf0  [\cf5 NSString\cf0  \cf5 stringWithCString\cf0 :systemInfo.\cf5 machine\cf0  \cf5 encoding\cf0 :\cf5 NSUTF8StringEncoding\cf0 ];\
+\}\
+\
+\
+-(\cf4 void\cf0 )shareWithFriends\
+\{\
+    \cf5 AppDelegate\cf0  * app = [[\cf5 UIApplication\cf0  \cf5 sharedApplication\cf0 ]\cf5 delegate\cf0 ];\
+    app.\cf5 inviteFriends\cf0  = \cf3 @"clips"\cf0 ;\
+    \cf5 InviteFriendsViewController\cf0  * view = [[\cf5 UIStoryboard\cf0  \cf5 storyboardWithName\cf0 :\cf3 @"ThirdModule"\cf0  \cf5 bundle\cf0 :\cf4 nil\cf0 ] \cf5 instantiateViewControllerWithIdentifier\cf0 :\cf3 @"InviteFriends"\cf0 ];\
+    [\cf4 self\cf0 .\cf5 navigationController\cf0  \cf5 pushViewController\cf0 :view \cf5 animated\cf0 :\cf4 YES\cf0 ];\
+\}\
+\
+\
+-(\cf4 void\cf0 )fbShare\
+\{\
+    \cf5 mainTable\cf0 .\cf5 backgroundColor\cf0  = [\cf5 UIColor\cf0  \cf5 colorWithWhite\cf0 :\cf4 0\cf0  \cf5 alpha\cf0 :\cf4 0.5\cf0 ];\
+    \cf5 FBCommentsViewController\cf0  * view = [[\cf5 UIStoryboard\cf0  \cf5 storyboardWithName\cf0 :\cf3 @"ThirdModule"\cf0  \cf5 bundle\cf0 :\cf4 nil\cf0 ] \cf5 instantiateViewControllerWithIdentifier\cf0 :\cf3 @"FBCommentsViewController"\cf0 ];\
+    \cf2 //[view setModalTransitionStyle:UIModalTransitionStyleFlipHorizontal];\cf0 \
+    [view \cf5 setModalPresentationStyle\cf0 :\cf5 UIModalPresentationOverCurrentContext\cf0 ];\
+    [\cf4 self\cf0  \cf5 presentViewController\cf0 :view \cf5 animated\cf0 :\cf4 YES\cf0  \cf5 completion\cf0 :\cf4 nil\cf0 ];\
+\}\
+\
+\
+\
+-(\cf4 void\cf0 )twitterShare\
+\{\
+    \cf5 AppDelegate\cf0  * app = [[\cf5 UIApplication\cf0  \cf5 sharedApplication\cf0 ]\cf5 delegate\cf0 ];\
+    \cf5 NSURL\cf0  * twitterUrl = [\cf5 NSURL\cf0  \cf5 URLWithString\cf0 :\cf3 @"twitter://"\cf0 ];\
+    \cf4 if\cf0  ([[\cf5 UIApplication\cf0  \cf5 sharedApplication\cf0 ] \cf5 canOpenURL\cf0 :twitterUrl])\
+    \{\
+        [app \cf6 ShowLoaderWithText\cf0 :\cf3 @""\cf0  \cf6 detail\cf0 :\cf3 @"Please wait it may take a minute to get share with Twitter"\cf0 ];\
+        \cf5 NSLog\cf0 (\cf3 @"Video URL %@"\cf0 , app.\cf5 videoStr\cf0 );\
+        \cf5 NSURL\cf0  * aURL = [\cf5 NSURL\cf0  \cf5 URLWithString\cf0 :app.\cf5 videoStr\cf0 ];\
+        \cf5 NSLog\cf0 (\cf3 @"URL %@"\cf0 , aURL);\
+\
+        \cf5 NSString\cf0  *videoURL = [[\cf5 NSBundle\cf0  \cf5 mainBundle\cf0 ] \cf5 pathForResource\cf0 :\cf3 @"Movie"\cf0  \cf5 ofType\cf0 :\cf3 @"m4v"\cf0 ];\
+        \
+        \cf2 // NSString *videoURL = app.videoStr;\cf0 \
+        \cf2 // AVAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:videoURL] options:nil];\cf0 \
+        [\cf4 self\cf0  \cf6 MixVideoWithText\cf0 :videoURL];\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        \cf5 UIAlertView\cf0  * alert = [[\cf5 UIAlertView\cf0  \cf5 alloc\cf0 ]\cf5 initWithTitle\cf0 :\cf3 @"Twitter is Not Installed"\cf0  \cf5 message\cf0 :\cf3 @"Install Twitter to share clips"\cf0  \cf5 delegate\cf0 :\cf4 self\cf0  \cf5 cancelButtonTitle\cf0 :\cf3 @"Ok"\cf0  \cf5 otherButtonTitles\cf0 :\cf4 nil\cf0 , \cf4 nil\cf0 ];\
+        [alert \cf5 show\cf0 ];\
+    \}\
+\}\
+\
+\
+\
+-(\cf4 void\cf0 )MixVideoWithText:(\cf5 NSString\cf0  *)str\
+\{\
+    \cf5 AppDelegate\cf0  * app = [[\cf5 UIApplication\cf0  \cf5 sharedApplication\cf0 ]\cf5 delegate\cf0 ];\
+   \cf5 NSLog\cf0 (\cf3 @"MixVideoWithText url - %@"\cf0 , str);\
+  \cf2 // videoAsset = [[AVURLAsset alloc]initWithURL:url options:nil];\cf0 \
+    \
+   \cf5 videoAsset\cf0  = [[\cf5 AVURLAsset\cf0  \cf5 alloc\cf0 ] \cf5 initWithURL\cf0 :[\cf5 NSURL\cf0  \cf5 fileURLWithPath\cf0 :str] \cf5 options\cf0 :\cf4 nil\cf0 ];\
+    \
+   \cf5 AVMutableComposition\cf0  * mixComposition = [\cf5 AVMutableComposition\cf0  \cf5 composition\cf0 ];\
+    \
+\cf2 //    AVMutableCompositionTrack *compositionVideoTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];\cf0 \
+\cf2 //    AVAssetTrack *clipVideoTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];\cf0 \
+    \
+    \cf5 AVMutableCompositionTrack\cf0  *compositionVideoTrack =\
+    [mixComposition \cf5 addMutableTrackWithMediaType\cf0 :\cf5 AVMediaTypeVideo\cf0 \
+                                \cf5 preferredTrackID\cf0 :\cf5 kCMPersistentTrackID_Invalid\cf0 ];\
+    \cf5 NSArray\cf0  *dataSourceArray = [\cf5 NSArray\cf0  \cf5 arrayWithArray\cf0 : [\cf5 videoAsset\cf0  \cf5 tracksWithMediaType\cf0 :\cf5 AVMediaTypeVideo\cf0 ]];\
+    \cf5 NSLog\cf0 (\cf3 @"array count => %lu"\cf0 ,(\cf4 unsigned\cf0  \cf4 long\cf0 )[dataSourceArray \cf5 count\cf0 ]);\
+    [compositionVideoTrack \cf5 insertTimeRange\cf0 :\cf5 CMTimeRangeMake\cf0 (\cf5 kCMTimeZero\cf0 , \cf5 videoAsset\cf0 .\cf5 duration\cf0 )\
+                                                               \cf5 ofTrack\cf0 :([dataSourceArray \cf5 count\cf0 ]>\cf4 0\cf0 )?[dataSourceArray \cf5 objectAtIndex\cf0 :\cf4 0\cf0 ]:\cf4 nil\cf0 \
+                                                                \cf5 atTime\cf0 :\cf5 kCMTimeZero\cf0 \
+                                                                 \cf5 error\cf0 :\cf4 nil\cf0 ];\
+                                \
+        \
+    \cf5 AVMutableCompositionTrack\cf0  * compositionAudioTrack = [mixComposition \cf5 addMutableTrackWithMediaType\cf0 :\cf5 AVMediaTypeAudio\cf0  \cf5 preferredTrackID\cf0 :\cf5 kCMPersistentTrackID_Invalid\cf0 ];\
+    \cf5 AVAssetTrack\cf0  *clipAudioTrack = [[\cf5 videoAsset\cf0  \cf5 tracksWithMediaType\cf0 :\cf5 AVMediaTypeAudio\cf0 ] \cf5 objectAtIndex\cf0 :\cf4 0\cf0 ];\
+    \cf2 //If you need audio as well add the Asset Track for audio here\cf0 \
+    \
+    \cf2 //[compositionVideoTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAsset.duration) ofTrack:clipVideoTrack atTime:kCMTimeZero error:nil];\cf0 \
+    [compositionAudioTrack \cf5 insertTimeRange\cf0 :\cf5 CMTimeRangeMake\cf0 (\cf5 kCMTimeZero\cf0 , \cf5 videoAsset\cf0 .\cf5 duration\cf0 ) \cf5 ofTrack\cf0 :clipAudioTrack \cf5 atTime\cf0 :\cf5 kCMTimeZero\cf0  \cf5 error\cf0 :\cf4 nil\cf0 ];\
+    \
+    [compositionVideoTrack \cf5 setPreferredTransform\cf0 :[[[\cf5 videoAsset\cf0  \cf5 tracksWithMediaType\cf0 :\cf5 AVMediaTypeVideo\cf0 ] \cf5 objectAtIndex\cf0 :\cf4 0\cf0 ] \cf5 preferredTransform\cf0 ]];\
+    \
+    \cf5 CGSize\cf0  sizeOfVideo=[\cf5 videoAsset\cf0  \cf5 naturalSize\cf0 ];\
+    \
+    \cf2 //TextLayer defines the text they want to add in Video\cf0 \
+    \cf2 //Text of watermark\cf0 \
+    \cf5 CATextLayer\cf0  *textOfvideo=[[\cf5 CATextLayer\cf0  \cf5 alloc\cf0 ] \cf5 init\cf0 ];\
+    textOfvideo.\cf5 string\cf0 =[\cf5 NSString\cf0  \cf5 stringWithFormat\cf0 :\cf3 @"Fanthem.com"\cf0 ];\cf2 //text is shows the text that you want add in video.\cf0 \
+    [textOfvideo \cf5 setFont\cf0 :(\cf4 __bridge\cf0  \cf5 CFTypeRef\cf0 )([\cf5 UIFont\cf0  \cf5 fontWithName\cf0 :\cf3 @"American Typewriter"\cf0  \cf5 size\cf0 :\cf4 13\cf0 ])];\cf2 //fontUsed is the name of font\cf0 \
+    [textOfvideo \cf5 setFrame\cf0 :\cf5 CGRectMake\cf0 (\cf4 0\cf0 , \cf4 0\cf0 , sizeOfVideo.\cf5 width\cf0 , sizeOfVideo.\cf5 height\cf0 /\cf4 6\cf0 )];\
+    [textOfvideo \cf5 setAlignmentMode\cf0 :\cf5 kCAAlignmentCenter\cf0 ];\
+    [textOfvideo \cf5 setForegroundColor\cf0 :[[\cf5 UIColor\cf0  \cf5 redColor\cf0 ] \cf5 CGColor\cf0 ]];\
+    \
+    \cf2 //Image of watermark\cf0 \
+    \cf5 UIImage\cf0  *myImage=[\cf5 UIImage\cf0  \cf5 imageNamed\cf0 :\cf3 @"app-logo-new.png"\cf0 ];\
+    \cf5 CALayer\cf0  * layerCa = [\cf5 CALayer\cf0  \cf5 layer\cf0 ];\
+    layerCa.\cf5 contents\cf0  = (\cf4 id\cf0 )myImage.\cf5 CGImage\cf0 ;\
+    layerCa.\cf5 frame\cf0  = \cf5 CGRectMake\cf0 (\cf4 0\cf0 , \cf4 0\cf0 , sizeOfVideo.\cf5 width\cf0 , sizeOfVideo.\cf5 height\cf0 );\
+    layerCa.\cf5 opacity\cf0  = \cf4 1.0\cf0 ;\
+    \
+    \cf5 CALayer\cf0  * optionalL=[\cf5 CALayer\cf0  \cf5 layer\cf0 ];\
+    [optionalL \cf5 addSublayer\cf0 :textOfvideo];\
+    optionalL.\cf5 frame\cf0 =\cf5 CGRectMake\cf0 (\cf4 0\cf0 , \cf4 0\cf0 , sizeOfVideo.\cf5 width\cf0 , sizeOfVideo.\cf5 height\cf0 );\
+    [optionalL \cf5 setMasksToBounds\cf0 :\cf4 YES\cf0 ];\
+    \
+    \cf5 CALayer\cf0  *parentLayer=[\cf5 CALayer\cf0  \cf5 layer\cf0 ];\
+    \cf5 CALayer\cf0  *videoLayer=[\cf5 CALayer\cf0  \cf5 layer\cf0 ];\
+    parentLayer.\cf5 frame\cf0 =\cf5 CGRectMake\cf0 (\cf4 0\cf0 , \cf4 0\cf0 , sizeOfVideo.\cf5 width\cf0 , sizeOfVideo.\cf5 height\cf0 );\
+    videoLayer.\cf5 frame\cf0 =\cf5 CGRectMake\cf0 (\cf4 0\cf0 , \cf4 0\cf0 , sizeOfVideo.\cf5 width\cf0 , sizeOfVideo.\cf5 height\cf0 );\
+    [parentLayer \cf5 addSublayer\cf0 :videoLayer];\
+    [parentLayer \cf5 addSublayer\cf0 :optionalL];\
+    [parentLayer \cf5 addSublayer\cf0 :layerCa];\
+    \
+    \cf5 AVMutableVideoComposition\cf0  *videoComposition=[\cf5 AVMutableVideoComposition\cf0  \cf5 videoComposition\cf0 ] ;\
+    videoComposition.\cf5 frameDuration\cf0 =\cf5 CMTimeMake\cf0 (\cf4 1\cf0 , \cf4 30\cf0 );\
+    videoComposition.\cf5 renderSize\cf0 =sizeOfVideo;\
+    videoComposition.\cf5 animationTool\cf0 =[\cf5 AVVideoCompositionCoreAnimationTool\cf0  \cf5 videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer\cf0 :videoLayer \cf5 inLayer\cf0 :parentLayer];\
+    \
+    \cf5 AVMutableVideoCompositionInstruction\cf0  *instruction = [\cf5 AVMutableVideoCompositionInstruction\cf0  \cf5 videoCompositionInstruction\cf0 ];\
+    instruction.\cf5 timeRange\cf0  = \cf5 CMTimeRangeMake\cf0 (\cf5 kCMTimeZero\cf0 , [mixComposition \cf5 duration\cf0 ]);\
+    \cf5 AVAssetTrack\cf0  *videoTrack = [[mixComposition \cf5 tracksWithMediaType\cf0 :\cf5 AVMediaTypeVideo\cf0 ] \cf5 objectAtIndex\cf0 :\cf4 0\cf0 ];\
+    \cf5 AVMutableVideoCompositionLayerInstruction\cf0 * layerInstruction = [\cf5 AVMutableVideoCompositionLayerInstruction\cf0  \cf5 videoCompositionLayerInstructionWithAssetTrack\cf0 :videoTrack];\
+    instruction.\cf5 layerInstructions\cf0  = [\cf5 NSArray\cf0  \cf5 arrayWithObject\cf0 :layerInstruction];\
+    videoComposition.\cf5 instructions\cf0  = [\cf5 NSArray\cf0  \cf5 arrayWithObject\cf0 : instruction];\
+    \
+    \cf5 NSString\cf0  *documentsDirectory = [\cf5 NSSearchPathForDirectoriesInDomains\cf0 (\cf5 NSDocumentDirectory\cf0 , \cf5 NSUserDomainMask\cf0 , \cf4 YES\cf0 )\cf5 objectAtIndex\cf0 :\cf4 0\cf0 ];\
+    \cf5 NSDateFormatter\cf0  *dateFormatter = [[\cf5 NSDateFormatter\cf0  \cf5 alloc\cf0 ] \cf5 init\cf0 ];\
+    [dateFormatter \cf5 setDateFormat\cf0 :\cf3 @"yyyy-MM-dd_HH-mm-ss"\cf0 ];\
+    \cf5 NSString\cf0  *destinationPath = [documentsDirectory \cf5 stringByAppendingFormat\cf0 :\cf3 @"/utput_%@.mov"\cf0 , [dateFormatter \cf5 stringFromDate\cf0 :[\cf5 NSDate\cf0  \cf5 date\cf0 ]]];\
+    \
+    \cf5 AVAssetExportSession\cf0  *exportSession = [[\cf5 AVAssetExportSession\cf0  \cf5 alloc\cf0 ] \cf5 initWithAsset\cf0 :mixComposition \cf5 presetName\cf0 :\cf5 AVAssetExportPresetMediumQuality\cf0 ];\
+    exportSession.\cf5 videoComposition\cf0 =videoComposition;\
+    \
+    exportSession.\cf5 outputURL\cf0  = [\cf5 NSURL\cf0  \cf5 fileURLWithPath\cf0 :destinationPath];\
+    exportSession.\cf5 outputFileType\cf0  = \cf5 AVFileTypeQuickTimeMovie\cf0 ;\
+    [exportSession \cf5 exportAsynchronouslyWithCompletionHandler\cf0 :^\{\
+        \cf5 NSLog\cf0 (\cf3 @"EXPORT STATUS %ld %@"\cf0 , (\cf4 long\cf0 )exportSession.\cf5 status\cf0 , exportSession.\cf5 error\cf0 );\
+        \
+        \cf4 switch\cf0  (exportSession.\cf5 status\cf0 )\
+        \{\
+            \cf4 case\cf0  \cf5 AVAssetExportSessionStatusCompleted\cf0 :\
+                [app \cf6 stopLoader\cf0 ];\
+                \cf5 NSLog\cf0 (\cf3 @"Export OK"\cf0 );\
+                \cf4 if\cf0  (\cf5 UIVideoAtPathIsCompatibleWithSavedPhotosAlbum\cf0 (destinationPath))\
+                \{\
+                    \cf5 NSLog\cf0 (\cf3 @"%@"\cf0 , destinationPath);\
+                    \cf5 UISaveVideoAtPathToSavedPhotosAlbum\cf0 (destinationPath, \cf4 nil\cf0 , \cf4 NULL\cf0 , \cf4 NULL\cf0 );\
+                    \cf4 if\cf0 ([\cf5 shareVideo\cf0  \cf5 isEqualToString\cf0 :\cf3 @"twitter"\cf0 ])\
+                    \{\
+                        [\cf4 self\cf0  \cf6 loadCameraRollAssetToTwitter\cf0 :[\cf5 NSURL\cf0  \cf5 URLWithString\cf0 :app.\cf5 videoStr\cf0 ] \cf6 andMessage\cf0 :\cf3 @"text"\cf0 ];\
+                    \}\
+                    \cf4 else\cf0 \
+                    \{\
+                        [\cf4 self\cf0  \cf6 loadCameraRollAssetToInstagram\cf0 :[\cf5 NSURL\cf0  \cf5 URLWithString\cf0 :app.\cf5 videoStr\cf0 ] \cf6 andMessage\cf0 :\cf3 @"text"\cf0 ];\
+                    \}\
+                \}\
+                \cf4 break\cf0 ;\
+            \cf4 case\cf0  \cf5 AVAssetExportSessionStatusFailed\cf0 :\
+            \{\
+                [app \cf6 stopLoader\cf0 ];\
+                \cf5 NSError\cf0  *exportError = exportSession.\cf5 error\cf0 ;\
+                \
+                \cf5 NSLog\cf0  (\cf3 @"AVAssetExportSessionStatusFailed: %@"\cf0 , exportError);\
+                \
+                \cf5 UIAlertController\cf0  * alert = [\cf5 UIAlertController\cf0  \cf5 alertControllerWithTitle\cf0 :\cf3 @"Process Failed"\cf0  \cf5 message\cf0 :\cf3 @"Please try again"\cf0  \cf5 preferredStyle\cf0 :\cf5 UIAlertControllerStyleAlert\cf0 ];\
+                \cf4 if\cf0 (alert != \cf4 nil\cf0 )\
+                \{\
+                    [alert \cf5 addAction\cf0 :[\cf5 UIAlertAction\cf0  \cf5 actionWithTitle\cf0 :\cf3 @"Ok"\cf0 \
+                                                              \cf5 style\cf0 :\cf5 UIAlertActionStyleDefault\cf0 \
+                                                            \cf5 handler\cf0 :^(\cf5 UIAlertAction\cf0  * action) \{\
+                                                            \}]];\
+                    \cf5 dispatch_async\cf0 (\cf5 dispatch_get_main_queue\cf0 (), ^ \{\
+                        [\cf4 self\cf0  \cf5 presentViewController\cf0 :alert \cf5 animated\cf0 :\cf4 YES\cf0  \cf5 completion\cf0 :\cf4 nil\cf0 ];\
+                    \});\
+                \}\
+                \cf4 else\cf0 \
+                \{\
+                    \cf5 UIAlertView\cf0  *alertView = [[\cf5 UIAlertView\cf0  \cf5 alloc\cf0 ] \cf5 initWithTitle\cf0 :\cf3 @"Process Failed"\cf0 \
+                                                                        \cf5 message\cf0 :\cf3 @"Please try again"\cf0 \
+                                                                       \cf5 delegate\cf0 :\cf4 nil\cf0 \
+                                                              \cf5 cancelButtonTitle\cf0 :\cf3 @"Ok"\cf0 \
+                                                              \cf5 otherButtonTitles\cf0 :\cf4 nil\cf0 ];\
+                    [alertView \cf5 show\cf0 ];\
+                \}\
+            \}\
+                \cf4 break\cf0 ;\
+            \cf4 case\cf0  \cf5 AVAssetExportSessionStatusCancelled\cf0 :\
+                [app \cf6 stopLoader\cf0 ];\
+                \cf5 UIAlertController\cf0  * alert = [\cf5 UIAlertController\cf0  \cf5 alertControllerWithTitle\cf0 :\cf3 @"Process Cancelled"\cf0  \cf5 message\cf0 :\cf3 @"Please try again"\cf0  \cf5 preferredStyle\cf0 :\cf5 UIAlertControllerStyleAlert\cf0 ];\
+                \cf4 if\cf0 (alert != \cf4 nil\cf0 )\
+                \{\
+                    [alert \cf5 addAction\cf0 :[\cf5 UIAlertAction\cf0  \cf5 actionWithTitle\cf0 :\cf3 @"Ok"\cf0 \
+                                                              \cf5 style\cf0 :\cf5 UIAlertActionStyleDefault\cf0 \
+                                                            \cf5 handler\cf0 :^(\cf5 UIAlertAction\cf0  * action) \{\
+                                                                \
+                                                            \}]];\
+                    \cf5 dispatch_async\cf0 (\cf5 dispatch_get_main_queue\cf0 (), ^ \{\
+                        [\cf4 self\cf0  \cf5 presentViewController\cf0 :alert \cf5 animated\cf0 :\cf4 YES\cf0  \cf5 completion\cf0 :\cf4 nil\cf0 ];\
+                    \});\
+                \}\
+                \cf4 else\cf0 \
+                \{\
+                    \cf5 UIAlertView\cf0  *alertView = [[\cf5 UIAlertView\cf0  \cf5 alloc\cf0 ] \cf5 initWithTitle\cf0 :\cf3 @"Process Cancelled"\cf0 \
+                                                                        \cf5 message\cf0 :\cf3 @"Please try again"\cf0 \
+                                                                       \cf5 delegate\cf0 :\cf4 nil\cf0 \
+                                                              \cf5 cancelButtonTitle\cf0 :\cf3 @"Ok"\cf0 \
+                                                              \cf5 otherButtonTitles\cf0 :\cf4 nil\cf0 ];\
+                    [alertView \cf5 show\cf0 ];\
+                \}\
+                \cf5 NSLog\cf0 (\cf3 @"Export Cancelled"\cf0 );\
+                \cf4 break\cf0 ;\
+        \}\
+    \}];\
+\}\
+\
+\
+-(\cf4 void\cf0 )MixVideoWithText1234:(\cf5 NSURL\cf0  *)url\
+\{\
+    \cf5 AppDelegate\cf0  * app = [[\cf5 UIApplication\cf0  \cf5 sharedApplication\cf0 ]\cf5 delegate\cf0 ];\
+    \cf5 videoAsset\cf0  = [[\cf5 AVURLAsset\cf0  \cf5 alloc\cf0 ]\cf5 initWithURL\cf0 :url \cf5 options\cf0 :\cf4 nil\cf0 ];\
+    \cf5 mutableComposition\cf0  = [\cf5 AVMutableComposition\cf0  \cf5 composition\cf0 ];\
+    \
+    \cf5 AVMutableCompositionTrack\cf0  * compositionVideoTrack = [\cf5 mutableComposition\cf0  \cf5 addMutableTrackWithMediaType\cf0 :\cf5 AVMediaTypeVideo\cf0  \cf5 preferredTrackID\cf0 :\cf5 kCMPersistentTrackID_Invalid\cf0 ];\
+    \
+   \cf2 // NSLog(@"%@", [[videoAsset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0]);\cf0 \
+    \cf5 AVAssetTrack\cf0  * clipVideoTrack = [[\cf5 videoAsset\cf0  \cf5 tracksWithMediaType\cf0 :\cf5 AVMediaTypeVideo\cf0 ] \cf5 lastObject\cf0 ];    \
+    \
+    \cf5 AVMutableCompositionTrack\cf0  * compositionAudioTrack = [\cf5 mutableComposition\cf0  \cf5 addMutableTrackWithMediaType\cf0 :\cf5 AVMediaTypeAudio\cf0  \cf5 preferredTrackID\cf0 :\cf5 kCMPersistentTrackID_Invalid\cf0 ];\
+    \
+    \cf5 AVAssetTrack\cf0  * clipAudioTrack = [[videoAsset tracksWithMediaType:AVMediaTypeAudio] lastObject];\
+    \
+    \cf2 //If you need audio as well add the Asset Track for audio here\cf0 \
+    \
+    [compositionVideoTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAsset.duration) ofTrack:clipVideoTrack atTime:kCMTimeZero error:\cf4 nil\cf0 ];\
+    \
+    [compositionAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, videoAsset.duration) ofTrack:clipAudioTrack atTime:kCMTimeZero error:\cf4 nil\cf0 ];\
+    \
+    [compositionVideoTrack setPreferredTransform:[[[videoAsset tracksWithMediaType:AVMediaTypeVideo]lastObject] preferredTransform]];\
+    \
+    CGSize sizeOfVideo=[videoAsset naturalSize];\
+    \
+    \cf2 //TextLayer defines the text they want to add in Video\cf0 \
+    \cf2 //Text of watermark\cf0 \
+    CATextLayer *textOfvideo=[[CATextLayer alloc] init];\
+    textOfvideo.string=[NSString stringWithFormat:\cf3 @"Fanthem.com"\cf0 ];\
+    \
+    \cf2 //text is shows the text that you want add in video.\cf0 \
+    [textOfvideo setFontSize:\cf4 20.0\cf0 ];\
+    [textOfvideo setFrame:CGRectMake(\cf4 330\cf0 , -\cf4 10\cf0 , \cf4 150\cf0 , \cf4 40\cf0 )];\
+    [textOfvideo setAlignmentMode:kCAAlignmentCenter];\
+    [textOfvideo setForegroundColor:(\cf4 __bridge\cf0  CGColorRef)([UIColor whiteColor])];\
+    textOfvideo.shadowOpacity = \cf4 1.0\cf0 ;\
+    \
+    \cf2 //Image of watermark\cf0 \
+    UIImage * myImage=[UIImage imageNamed:\cf3 @"app-logo-new.png"\cf0 ];\
+    CALayer * layerCa = [CALayer layer];\
+    layerCa.contents = (\cf4 id\cf0 )myImage.CGImage;\
+    layerCa.frame = CGRectMake(\cf4 20\cf0 , \cf4 300\cf0 , \cf4 60\cf0 , \cf4 60\cf0 );\
+    layerCa.shadowOpacity = \cf4 1.0\cf0 ;\
+    \
+    CALayer * parentLayer = [CALayer layer];\
+    CALayer * videoLayer = [CALayer layer];\
+    parentLayer.frame=CGRectMake(\cf4 0\cf0 , \cf4 0\cf0 , sizeOfVideo.width, sizeOfVideo.height);\
+    videoLayer.frame=CGRectMake(\cf4 0\cf0 , \cf4 0\cf0 , sizeOfVideo.width, sizeOfVideo.height);\
+    [parentLayer addSublayer:videoLayer];\
+    \
+    [parentLayer addSublayer:layerCa];\
+    [parentLayer addSublayer:textOfvideo];\
+    \
+    \
+    AVMutableVideoComposition * videoComposition=[AVMutableVideoComposition videoComposition];\
+    \
+    \
+                                                    \
+    videoComposition.frameDuration=CMTimeMake(\cf4 1\cf0 , \cf4 30\cf0 );\
+    videoComposition.renderSize=sizeOfVideo;\
+    videoComposition.animationTool=[AVVideoCompositionCoreAnimationTool videoCompositionCoreAnimationToolWithPostProcessingAsVideoLayer:videoLayer inLayer:parentLayer];\
+    \
+    AVMutableVideoCompositionInstruction *instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];\
+    instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [mutableComposition duration]);\
+    \
+    AVAssetTrack *videoTrack = [[mutableComposition tracksWithMediaType:AVMediaTypeVideo] lastObject];\
+    \
+    \
+    \
+    AVMutableVideoCompositionLayerInstruction* layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoTrack];\
+    instruction.layerInstructions = [NSArray arrayWithObject:layerInstruction];\
+    videoComposition.instructions = [NSArray arrayWithObject: instruction];\
+    \
+    NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, \cf4 YES\cf0 )objectAtIndex:\cf4 0\cf0 ];\
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];\
+    [dateFormatter setDateFormat:\cf3 @"yyyy-MM-dd_HH-mm-ss"\cf0 ];\
+    NSString *destinationPath = [documentsDirectory stringByAppendingFormat:\cf3 @"/output_%@.mov"\cf0 , [dateFormatter stringFromDate:[NSDate date]]];\
+    NSLog(\cf3 @"Destination path %@"\cf0 , destinationPath);\
+    NSError* error;\
+    \cf4 if\cf0 ([[NSFileManager defaultManager] fileExistsAtPath:destinationPath])\
+    \{\
+        [[NSFileManager defaultManager] removeItemAtPath:destinationPath error:&error];\
+    \}\
+    \
+    \cf4 if\cf0  (error != \cf4 nil\cf0 )\
+    \{\
+        NSLog(\cf3 @"Video Saved"\cf0 );\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        NSLog(\cf3 @"Error ^^^ - %@"\cf0 , error);\
+    \}\
+    AVAssetExportSession * exportSession = [[AVAssetExportSession alloc] initWithAsset:mutableComposition presetName:AVAssetExportPresetMediumQuality];\
+    \
+    NSLog (\cf3 @"created exporter. supportedFileTypes: %@"\cf0 , exportSession.supportedFileTypes);\
+    videoComposition.renderSize = CGSizeMake(\cf4 480\cf0 , \cf4 360\cf0 );\
+    exportSession.videoComposition=videoComposition;\
+    exportSession.outputURL = [NSURL fileURLWithPath:destinationPath];\
+    exportSession.outputFileType = \cf3 @"com.apple.quicktime-movie"\cf0 ;\
+    \
+    \
+    [exportSession exportAsynchronouslyWithCompletionHandler:^\{\
+        NSLog(\cf3 @"EXPORT STATUS %ld %@"\cf0 , (\cf4 long\cf0 )exportSession.status, exportSession.error);\
+\
+        \cf4 switch\cf0  (exportSession.status)\
+        \{\
+            \cf4 case\cf0  AVAssetExportSessionStatusCompleted:\
+                [app stopLoader];\
+                NSLog(\cf3 @"Export OK"\cf0 );\
+                \cf4 if\cf0  (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(destinationPath))\
+                \{\
+                    NSLog(\cf3 @"%@"\cf0 , destinationPath);\
+                    UISaveVideoAtPathToSavedPhotosAlbum(destinationPath, \cf4 nil\cf0 , \cf4 NULL\cf0 , \cf4 NULL\cf0 );\
+                    \cf4 if\cf0 ([shareVideo isEqualToString:\cf3 @"twitter"\cf0 ])\
+                    \{\
+                        [\cf4 self\cf0  loadCameraRollAssetToTwitter:[NSURL URLWithString:app.videoStr] andMessage:\cf3 @"text"\cf0 ];\
+                    \}\
+                    \cf4 else\cf0 \
+                    \{\
+                        [\cf4 self\cf0  loadCameraRollAssetToInstagram:[NSURL URLWithString:app.videoStr] andMessage:\cf3 @"text"\cf0 ];\
+                    \}\
+                \}\
+                \cf4 break\cf0 ;\
+            \cf4 case\cf0  AVAssetExportSessionStatusFailed:\
+            \{\
+                [app stopLoader];\
+                NSError *exportError = exportSession.error;\
+                \
+                NSLog (\cf3 @"AVAssetExportSessionStatusFailed: %@"\cf0 , exportError);\
+\
+                UIAlertController * alert = [UIAlertController alertControllerWithTitle:\cf3 @"Process Failed"\cf0  message:\cf3 @"Please try again"\cf0  preferredStyle:UIAlertControllerStyleAlert];\
+                \cf4 if\cf0 (alert != \cf4 nil\cf0 )\
+                \{\
+                    [alert addAction:[UIAlertAction actionWithTitle:\cf3 @"Ok"\cf0 \
+                                                              style:UIAlertActionStyleDefault\
+                                                            handler:^(UIAlertAction * action) \{\
+                                                            \}]];\
+                    dispatch_async(dispatch_get_main_queue(), ^ \{\
+                        [\cf4 self\cf0  presentViewController:alert animated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+                    \});\
+                \}\
+                \cf4 else\cf0 \
+                \{\
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:\cf3 @"Process Failed"\cf0 \
+                                                                        message:\cf3 @"Please try again"\cf0 \
+                                                                       delegate:\cf4 nil\cf0 \
+                                                              cancelButtonTitle:\cf3 @"Ok"\cf0 \
+                                                              otherButtonTitles:\cf4 nil\cf0 ];\
+                    [alertView show];\
+                \}\
+            \}\
+                \cf4 break\cf0 ;\
+            \cf4 case\cf0  AVAssetExportSessionStatusCancelled:\
+                [app stopLoader];\
+                UIAlertController * alert = [UIAlertController alertControllerWithTitle:\cf3 @"Process Cancelled"\cf0  message:\cf3 @"Please try again"\cf0  preferredStyle:UIAlertControllerStyleAlert];\
+                \cf4 if\cf0 (alert != \cf4 nil\cf0 )\
+                \{\
+                    [alert addAction:[UIAlertAction actionWithTitle:\cf3 @"Ok"\cf0 \
+                                                              style:UIAlertActionStyleDefault\
+                                                            handler:^(UIAlertAction * action) \{\
+                                                                \
+                                                            \}]];\
+                    dispatch_async(dispatch_get_main_queue(), ^ \{\
+                        [\cf4 self\cf0  presentViewController:alert animated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+                    \});\
+                \}\
+                \cf4 else\cf0 \
+                \{\
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:\cf3 @"Process Cancelled"\cf0 \
+                                                                        message:\cf3 @"Please try again"\cf0 \
+                                                                       delegate:\cf4 nil\cf0 \
+                                                              cancelButtonTitle:\cf3 @"Ok"\cf0 \
+                                                              otherButtonTitles:\cf4 nil\cf0 ];\
+                    [alertView show];\
+                \}\
+                NSLog(\cf3 @"Export Cancelled"\cf0 );\
+                \cf4 break\cf0 ;\
+        \}\
+    \}];\
+\}\
+\
+\
+\
+\
+\
+- (\cf4 void\cf0 )loadCameraRollAssetToTwitter:(NSURL*)assetsLibraryURL andMessage:(NSString*)message\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    [app stopLoader];\
+    NSString * String = assetsLibraryURL.absoluteString;\
+    NSString * escapedString = [String stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];\
+    NSLog(\cf3 @"ESCapedString %@"\cf0 , escapedString);\
+    \
+    NSURL * twitterURL  = [NSURL URLWithString:[NSString stringWithFormat:\cf3 @"twitter://post?message=%@"\cf0 , escapedString]];\
+    NSLog(\cf3 @"Twitter URL %@"\cf0 , twitterURL);    \
+    \
+    \cf4 if\cf0  ([[UIApplication sharedApplication] canOpenURL:twitterURL])\
+    \{\
+        [[UIApplication sharedApplication] openURL:twitterURL];\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:\cf3 @"Twitter is Not Installed"\cf0  message:\cf3 @"Install Twitter to share clips"\cf0  delegate:\cf4 self\cf0  cancelButtonTitle:\cf3 @"Ok"\cf0  otherButtonTitles:\cf4 nil\cf0 , \cf4 nil\cf0 ];\
+        [alert show];\
+    \}\
+\}\
+\
+\
+-(\cf4 void\cf0 )instagramShare\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    NSURL *instagramURL = [NSURL URLWithString:\cf3 @"instagram://app"\cf0 ];\
+    \cf4 if\cf0  ([[UIApplication sharedApplication] canOpenURL:instagramURL])\
+    \{\
+        [app ShowLoaderWithText:\cf3 @""\cf0  detail:\cf3 @"Please wait it may take a minute to connect with Instagram"\cf0 ];\
+        NSLog(\cf3 @"Video URL %@"\cf0 , app.videoStr);\
+        NSURL * aURL = [NSURL URLWithString:app.videoStr];\
+        NSLog(\cf3 @"URL %@"\cf0 , aURL);\
+        [\cf4 self\cf0   MixVideoWithText:app.videoStr];\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:\cf3 @"Instagram is Not Installed"\cf0  message:\cf3 @"Install Instagram to share clips"\cf0  delegate:\cf4 self\cf0  cancelButtonTitle:\cf3 @"Ok"\cf0  otherButtonTitles:\cf4 nil\cf0 , \cf4 nil\cf0 ];\
+        [alert show];\
+    \}\
+\}\
+\
+\
+\
+\
+- (\cf4 void\cf0 )loadCameraRollAssetToInstagram:(NSURL*)assetsLibraryURL andMessage:(NSString*)message\
+\{\
+    \cf2 //    activity_home.hidden = YES;\cf0 \
+    \cf2 //    [activity_home stopAnimating];\cf0 \
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    [app stopLoader];\
+    NSString * String   = assetsLibraryURL.absoluteString;\
+    NSString * Caption  = message;\
+    NSString * escapedCaption = [Caption stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];\
+    NSString * escapedString = [String stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];\
+    NSLog(\cf3 @"ESCapedString %@"\cf0 , escapedString);\
+    \
+    NSURL *instagramURL  = [NSURL URLWithString:[NSString stringWithFormat:\cf3 @"instagram://library?AssetPath=%@&InstagramCaption=%@"\cf0 , escapedString, escapedCaption]];\
+    NSLog(\cf3 @"INSTAGRAM URL %@"\cf0 , instagramURL);\
+    \
+    \cf4 if\cf0  ([[UIApplication sharedApplication] canOpenURL:instagramURL])\
+    \{\
+        [[UIApplication sharedApplication] openURL:instagramURL];\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:\cf3 @"Instagram is Not Installed"\cf0  message:\cf3 @"Install Instagram to share clips"\cf0  delegate:\cf4 self\cf0  cancelButtonTitle:\cf3 @"Ok"\cf0  otherButtonTitles:\cf4 nil\cf0 , \cf4 nil\cf0 ];\
+        [alert show];\
+    \}\
+\}\
+\
+\
+\
+\
+\
+\
+#pragma mark - Actionsheet\
+- (\cf4 void\cf0 )actionSheet:(UIActionSheet *)popup didDismissWithButtonIndex:(NSInteger)buttonIndex\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+\
+    \cf4 switch\cf0  (popup.tag)\
+    \{\
+        \cf4 case\cf0  \cf4 1\cf0 :\
+        \{\
+            \cf4 switch\cf0  (buttonIndex)\
+            \{\
+                \cf4 case\cf0  \cf4 0\cf0 :\
+                    [\cf4 self\cf0 .view endEditing:\cf4 YES\cf0 ];\
+                    \cf2 //[self fbShare];\cf0 \
+                    \cf4 if\cf0 ([SLComposeViewController isAvailableForServiceType:SLServiceTypeFacebook])\
+                    \{\
+                        SLComposeViewController * fbSheetOBJ = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];\
+                        \
+                        [fbSheetOBJ setInitialText:\cf3 @"Add Comments"\cf0 ];\
+                        [fbSheetOBJ addURL:[NSURL URLWithString:app.videoStr]];\
+                        \
+                        [\cf4 self\cf0  presentViewController:fbSheetOBJ animated:\cf4 YES\cf0  completion:\cf4 Nil\cf0 ];\
+                    \}\
+                    \
+                    \cf4 break\cf0 ;\
+                \cf4 case\cf0  \cf4 1\cf0 :\
+                    [\cf4 self\cf0 .view endEditing:\cf4 YES\cf0 ];\
+                    shareVideo = \cf3 @"twitter"\cf0 ;\
+                    [\cf4 self\cf0  twitterShare];\
+                    \cf4 break\cf0 ;\
+                \cf4 case\cf0  \cf4 2\cf0 :\
+                    [\cf4 self\cf0 .view endEditing:\cf4 YES\cf0 ];\
+                    shareVideo = \cf3 @"instagram"\cf0 ;\
+                    [\cf4 self\cf0  instagramShare];\
+                    \cf4 break\cf0 ;\
+                \cf4 case\cf0  \cf4 3\cf0 :\
+                    [\cf4 self\cf0 .view endEditing:\cf4 YES\cf0 ];\
+                    [\cf4 self\cf0  shareWithFriends];\
+                    \cf4 break\cf0 ;\
+                \cf4 default\cf0 :\
+                    \cf4 break\cf0 ;\
+            \}\
+            \cf4 break\cf0 ;\
+        \}\
+        \cf4 default\cf0 :\
+            \cf4 break\cf0 ;\
+    \}\
+\}\
+\
+\
+#pragma mark - SendSMS\
+- (\cf4 void\cf0 )buttonPressed\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    NSLog(\cf3 @"%@buttonpressed"\cf0 , app.mobileContact);\
+    \
+    \cf4 if\cf0 (app.mobileContact.count != \cf4 0\cf0 )\
+    \{\
+        [\cf4 self\cf0  sendSMS:[NSString stringWithFormat:\cf3 @"Join me and download the Fanthem app! Record and watch public and private clips of sports you love to watch and play. You can also stay up to date on fan articles, videos, web rants and audio broadcasts from fanthem.com!"\cf0 ] recipientList:app.mobileContact];\
+        app.mobileContact = [[NSMutableArray alloc]init];\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        NSLog(\cf3 @"Not contact to send sms"\cf0 );\
+    \}\
+\}\
+\
+- (\cf4 void\cf0 )sendSMS:(NSString *)bodyOfMessage recipientList:(NSArray *)recipients\
+\{\
+    MFMessageComposeViewController *controller = [[MFMessageComposeViewController alloc] init] ;\
+    \cf4 if\cf0 ([MFMessageComposeViewController canSendText])\
+    \{\
+        controller.body = bodyOfMessage;\
+        controller.recipients = recipients;\
+        controller.messageComposeDelegate = \cf4 self\cf0 ;\
+        [\cf4 self\cf0  presentViewController:controller animated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+    \}\
+\}\
+\
+\
+\
+\
+\
+\
+\
+- (\cf4 void\cf0 )messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result\
+\{\
+    [\cf4 self\cf0  dismissViewControllerAnimated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+    \cf4 if\cf0  (result == MessageComposeResultCancelled)\
+        NSLog(\cf3 @"Message cancelled"\cf0 );\
+    \cf4 else\cf0  \cf4 if\cf0  (result == MessageComposeResultSent)\
+        NSLog(\cf3 @"Message sent"\cf0 );\
+    \cf4 else\cf0 \
+        NSLog(\cf3 @"Message failed"\cf0 );\
+\}\
+\
+\
+\
+#pragma mark - ScrollView Methods\
+\
+- (\cf4 void\cf0 )scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(\cf4 BOOL\cf0 )decelerate\
+\{\
+    isDragging_msg = \cf4 FALSE\cf0 ;\
+    [mainTable reloadData];\
+\}\
+\
+- (\cf4 void\cf0 )scrollViewDidEndDecelerating:(UIScrollView *)scrollView\
+\{\
+    isDecliring_msg = \cf4 FALSE\cf0 ;\
+    [mainTable reloadData];\
+\}\
+\
+- (\cf4 void\cf0 )scrollViewWillBeginDragging:(UIScrollView *)scrollView\
+\{\
+    isDragging_msg = \cf4 TRUE\cf0 ;\
+\}\
+\
+- (\cf4 void\cf0 )scrollViewWillBeginDecelerating:(UIScrollView *)scrollView\
+\{\
+    isDecliring_msg = \cf4 TRUE\cf0 ;\
+\}\
+\
+\
+\
+-(\cf4 void\cf0 )scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView\
+\{\
+    NSLog(\cf3 @"End Scrolling"\cf0 );\
+\}\
+\
+\
+#pragma mark - Comments\
+-(\cf4 IBAction\cf0 )commentsView:(\cf4 id\cf0 )sender\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    app.backComment = \cf3 @"MobileClips"\cf0 ;\
+    app.str1 = app.commentStr;\
+    app.commentType = \cf3 @"app"\cf0 ;\
+    NSLog(\cf3 @"%@"\cf0 , app.str1);\
+    CommentsViewController * view = [[UIStoryboard storyboardWithName:\cf3 @"ThirdModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"CommentsView"\cf0 ];\
+    [\cf4 self\cf0 .navigationController pushViewController:view animated:\cf4 YES\cf0 ];\
+\}\
+\
+\
+#pragma mark \'96 UIGestureRecognizerDelegate\
+\
+- (\cf4 BOOL\cf0 )gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch\
+\{\
+   \cf2 // NSLog(@"GestureRecognizer Delegate");\cf0 \
+    \cf4 return\cf0  ![\cf4 self\cf0 .subTable indexPathForRowAtPoint:[touch locationInView:\cf4 self\cf0 .subTable]];\
+\}\
+\
+\
+#pragma mark - VideoRecord\
+\
+-(\cf4 IBAction\cf0 )videorecord:(\cf4 id\cf0 )sender\
+\{\
+    AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+    app.backcamera=\cf3 @"home"\cf0 ;\
+    \
+    recordView = [[UIStoryboard storyboardWithName:\cf3 @"SecondModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"PBJViewController"\cf0 ];\
+    \
+    NSString *mediaType = AVMediaTypeVideo; \cf2 // Or AVMediaTypeAudio\cf0 \
+    authStatus = [AVCaptureDevice authorizationStatusForMediaType:mediaType];\
+    \cf2 //NSLog(@"%d", authStatus);\cf0 \
+    Access * accessView = [[UIStoryboard storyboardWithName:\cf3 @"Login"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"Access"\cf0 ];\
+    \
+     accessMicroView = [[UIStoryboard storyboardWithName:\cf3 @"Login"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"AccessMicrophone"\cf0 ];\
+    \
+    \cf2 // The user has explicitly denied permission for media capture.\cf0 \
+    \cf4 if\cf0 ((authStatus == AVAuthorizationStatusDenied) || (authStatus == AVAuthorizationStatusRestricted))\
+    \{\
+        NSLog(\cf3 @"Denied"\cf0 );\
+        [\cf4 self\cf0 .navigationController pushViewController:accessView animated:\cf4 YES\cf0 ];\
+    \}\
+    \cf4 else\cf0  \cf4 if\cf0 (authStatus == AVAuthorizationStatusAuthorized)\
+    \{\
+        NSLog(\cf3 @"Status Authorized"\cf0 );\
+    \}\
+    \cf4 else\cf0  \cf4 if\cf0 (authStatus == AVAuthorizationStatusNotDetermined)\
+    \{\
+        \cf2 // not determined\cf0 \
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(\cf4 BOOL\cf0  granted)\
+         \{\
+             cameraGranted = granted;\
+             NSLog(\cf3 @"%x %x"\cf0 , cameraGranted, granted);\
+             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, \cf4 0\cf0 ), ^\{\
+             \cf4 if\cf0 (granted)\
+             \{\
+                 NSLog(\cf3 @"Access Granted Video"\cf0 );\
+                 \
+                \cf2 // dispatch_async(dispatch_get_main_queue(), ^\{\cf0 \
+                     [\cf4 self\cf0  accessMicrophone];\
+                \cf2 // \});\cf0 \
+                \cf2 // [self.navigationController pushViewController:view animated:YES];\cf0 \
+             \}\
+             \cf4 else\cf0 \
+             \{\
+                dispatch_async(dispatch_get_main_queue(), ^\{\
+                    NSLog(\cf3 @"Access Denied Video"\cf0 );\
+                    [\cf4 self\cf0 .navigationController pushViewController:accessView animated:\cf4 YES\cf0 ];\
+                \});\
+             \}\
+             \});\
+         \}];\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        \
+    \}\
+    [\cf4 self\cf0  accessMicrophone];\
+\}\
+\
+\
+\
+-(\cf4 void\cf0 )accessMicrophone\
+\{\
+    NSLog(\cf3 @"%ld"\cf0 , (\cf4 long\cf0 )authStatus);\
+    NSLog(\cf3 @"Access Camera %x"\cf0 , cameraGranted);\
+    \cf4 if\cf0 (cameraGranted || authStatus == AVAuthorizationStatusAuthorized)\
+    \{\
+        NSString * mediaType1 = AVMediaTypeAudio; \cf2 // Or AVMediaTypeAudio\cf0 \
+        AVAuthorizationStatus authStatus1 = [AVCaptureDevice authorizationStatusForMediaType:mediaType1];\
+        NSLog(\cf3 @"%ld"\cf0 , (\cf4 long\cf0 )authStatus1);\
+        \
+        \cf2 // The user has explicitly denied permission for media capture.\cf0 \
+        \cf4 if\cf0 ((authStatus1 == AVAuthorizationStatusDenied) || (authStatus1 == AVAuthorizationStatusRestricted))\
+        \{\
+            NSLog(\cf3 @"Denied"\cf0 );\
+            [\cf4 self\cf0 .navigationController pushViewController:accessMicroView animated:\cf4 YES\cf0 ];\
+        \}\
+        \
+        \cf4 else\cf0  \cf4 if\cf0 (authStatus1 == AVAuthorizationStatusAuthorized)\
+        \{\
+            \cf2 // authorized\cf0 \
+            NSLog(\cf3 @"Status Authorized"\cf0 );\
+            [\cf4 self\cf0 .navigationController pushViewController:recordView animated:\cf4 YES\cf0 ];\
+        \}\
+        \
+        \cf4 else\cf0  \cf4 if\cf0 (authStatus1 == AVAuthorizationStatusNotDetermined)\
+        \{\
+            \cf2 // not determined\cf0 \
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(\cf4 BOOL\cf0  granted)\
+             \{\
+                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, \cf4 0\cf0 ), ^\{\
+                 \cf4 if\cf0 (granted)\
+                 \{\
+                     \cf2 // Access has been granted ..do something\cf0 \
+                     NSLog(\cf3 @"Access Granted Audio"\cf0 );\
+                     dispatch_async(dispatch_get_main_queue(), ^\{\
+                     [\cf4 self\cf0 .navigationController pushViewController:recordView animated:\cf4 YES\cf0 ];\
+                     \});\
+                 \}\
+                 \cf4 else\cf0 \
+                 \{\
+                     \cf2 // Access denied ..do something\cf0 \
+                     dispatch_async(dispatch_get_main_queue(), ^\{\
+                         NSLog(\cf3 @"Access Denied Audio"\cf0 );\
+                     [\cf4 self\cf0 .navigationController pushViewController:accessMicroView animated:\cf4 YES\cf0 ];\
+                     \});\
+                 \}\
+                 \});\
+             \}];\
+        \}\
+        \cf4 else\cf0 \
+        \{\
+            \
+        \}\
+    \}\
+\}\
+\
+\
+\
+\
+\
+#pragma mark - Service Call get_notification_count\
+-(\cf4 void\cf0 )notificationCount\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    [app ShowLoaderWithText:\cf3 @""\cf0  detail:\cf3 @"Loading..."\cf0 ];\
+    user = [NSUserDefaults standardUserDefaults];\
+    NSString *urlString =[NSString stringWithFormat:\cf3 @"%@/web-servic/request_response.php?action=get_notification_count&user_id=%@&user_type=%@"\cf0 , app.baseURL, [user objectForKey:\cf3 @"unique_id"\cf0 ], [user objectForKey:\cf3 @"user"\cf0 ]];\
+    NSLog(\cf3 @"**** %@"\cf0 , urlString);\
+\
+    NSURL * url = [NSURL URLWithString:urlString];\
+    request = [NSURLRequest requestWithURL:url];\
+    \
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];\
+    operation.responseSerializer = [AFJSONResponseSerializer serializer];\
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, \cf4 id\cf0  responseObject)\
+     \{\
+         NSLog(\cf3 @"%@"\cf0 , responseObject);\
+         dispatch_async(dispatch_get_main_queue(),^\{\
+             [app stopLoader];\
+             [\cf4 self\cf0 .subTable reloadData];\
+         \});\
+         NSString * notificationCount = [responseObject objectForKey:\cf3 @"notification_count"\cf0 ];\
+         app.notificationCount = notificationCount;\
+         [UIApplication sharedApplication].applicationIconBadgeNumber = [app.notificationCount intValue];\
+         NSLog(\cf3 @"Notification Count - %@"\cf0 , app.notificationCount);\
+         \
+     \}\
+     failure:^(AFHTTPRequestOperation *operation, NSError *error)\
+     \{\
+         dispatch_async(dispatch_get_main_queue(),^\{\
+             [app stopLoader];\
+             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:\cf3 @"Error Retrieving data"\cf0 \
+                                                                 message:[error localizedDescription]\
+                                                                delegate:\cf4 nil\cf0 \
+                                                       cancelButtonTitle:\cf3 @"Ok"\cf0 \
+                                                       otherButtonTitles:\cf4 nil\cf0 ];\
+             [alertView show];\
+         \});\
+     \}];\
+    [operation start];\
+\}\
+\
+\
+#pragma mark - Side Menu\
+- (\cf4 IBAction\cf0 )showMenuDown:(\cf4 id\cf0 )sender\
+\{\
+    [\cf4 self\cf0  menu];\
+    \cf4 if\cf0 (content.frame.origin.x == \cf4 0\cf0 ) \cf2 //only show the menu if it is not already shown\cf0 \
+        [\cf4 self\cf0  showMenu];\
+    \cf4 else\cf0 \
+        [\cf4 self\cf0  hideMenu];\
+\}\
+\
+\
+-(\cf4 void\cf0 )menu\
+\{\
+    \cf4 if\cf0 (menuBool == \cf4 YES\cf0 )\
+    \{\
+        menuBool = \cf4 NO\cf0 ;\
+        subTable.hidden = \cf4 NO\cf0 ;\
+        subTable.delegate = \cf4 self\cf0 ;\
+        subTable.dataSource = \cf4 self\cf0 ;\
+        [subTable reloadData];\
+    \}\
+    \cf4 else\cf0 \
+    \{\
+        menuBool = \cf4 YES\cf0 ;\
+    \}\
+\}\
+\
+-(\cf4 void\cf0 )showMenu\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    [\cf4 self\cf0  menu];\
+    [\cf4 self\cf0  notificationCount];\
+    [UIApplication sharedApplication].applicationIconBadgeNumber = [app.notificationCount intValue];\
+    \cf2 //[self refreshStart];\cf0 \
+    [UIView animateWithDuration:\cf4 0.50\cf0 \
+                     animations:^\{\
+                         \
+                         [content setFrame:CGRectMake(subTable.frame.size.width, content.frame.origin.y, content.frame.size.width, content.frame.size.height)];\
+                     \}\
+     ];\
+\}\
+\
+-(\cf4 void\cf0 )hideMenu\
+\{\
+    [UIView animateWithDuration:\cf4 0.50\cf0 \
+                     animations:^\{\
+                         \
+                         [content setFrame:CGRectMake(\cf4 0\cf0 , content.frame.origin.y, content.frame.size.width, content.frame.size.height)];\
+                     \}\
+     ];\
+\}\
+\
+\
+-(\cf4 void\cf0 )handleSwipeLeft:(UISwipeGestureRecognizer*)recognizer\
+\{\
+    NSLog(\cf3 @"Swipe Left"\cf0 );\
+    \cf2 //[self refreshStart];\cf0 \
+    \cf4 if\cf0 (content.frame.origin.x != \cf4 0\cf0 )\
+        [\cf4 self\cf0  hideMenu];\
+\}\
+\
+-(\cf4 void\cf0 )handleSwipeRight:(UISwipeGestureRecognizer*)recognizer\
+\{\
+    NSLog(\cf3 @"Swipe Right"\cf0 );\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    [UIApplication sharedApplication].applicationIconBadgeNumber = [app.notificationCount intValue];\
+    [\cf4 self\cf0  notificationCount];\
+    \cf4 if\cf0 (content.frame.origin.x == \cf4 0\cf0 )\
+        [\cf4 self\cf0  showMenu];\
+\}\
+\
+\
+#pragma mark - Profile Page\
+-(\cf4 IBAction\cf0 )profileclass:(\cf4 id\cf0 )sender\
+\{\
+  \cf2 //  AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\cf0 \
+    Profilepage *profilepage = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"Profilepage"\cf0 ];\
+    [\cf4 self\cf0 .navigationController pushViewController:profilepage animated:\cf4 YES\cf0 ];\
+\}\
+\
+\
+#pragma mark - ViewWillAppear\
+- (\cf4 void\cf0 )viewWillAppear:(\cf4 BOOL\cf0 )animated\
+\{\
+    [\cf4 super\cf0  viewWillAppear:\cf4 YES\cf0 ];\
+    AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+    app.backcamera3=\cf3 @"homepage"\cf0 ;\
+\}\
+\
+\
+\
+#pragma mark - Service call mobile_rants\
+-(\cf4 void\cf0 )servicecalling\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];    \
+    [app ShowLoaderWithText:\cf3 @""\cf0  detail:\cf3 @"Loading..."\cf0 ];    \
+    NSString * type=\cf3 @"mobile_rants"\cf0 ;\
+    user = [NSUserDefaults standardUserDefaults];\
+    \
+    NSString *urlString =[NSString stringWithFormat:\cf3 @"%@/web-servic/request_response.php?type=%@&user_id=%@&start=%d&end=10&user_type=%@"\cf0 , app.baseURL, type, [user objectForKey:\cf3 @"unique_id"\cf0 ], start, [user objectForKey:\cf3 @"user"\cf0 ]];\
+    NSLog(\cf3 @"**** %@"\cf0 , urlString);\
+    \
+    \
+    NSURL *url = [NSURL URLWithString:urlString];\
+    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];\
+    NSOperationQueue *queues = [[NSOperationQueue alloc] init];\
+    [NSURLConnection sendAsynchronousRequest:urlRequest queue:queues completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)\
+    \{\
+        \cf4 if\cf0  (error)\
+        \{\
+             dispatch_async(dispatch_get_main_queue(),^\{\
+                 [app stopLoader];\
+                 UIAlertController * alert = [UIAlertController alertControllerWithTitle:\cf3 @"Error Retrieving data"\cf0  message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];\
+                 \cf4 if\cf0 (alert != \cf4 nil\cf0 )\
+                 \{\
+                     [alert addAction:[UIAlertAction actionWithTitle:\cf3 @"Ok"\cf0 \
+                                                               style:UIAlertActionStyleDefault\
+                                                             handler:^(UIAlertAction * action) \{\
+                                                             \}]];\
+                     dispatch_async(dispatch_get_main_queue(), ^ \{\
+                         [\cf4 self\cf0  presentViewController:alert animated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+                     \});\
+                 \}\
+                 \cf4 else\cf0 \
+                 \{\
+                     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:\cf3 @"Error Retrieving data"\cf0 \
+                                                                         message:[error localizedDescription]\
+                                                                        delegate:\cf4 nil\cf0 \
+                                                               cancelButtonTitle:\cf3 @"Ok"\cf0 \
+                                                               otherButtonTitles:\cf4 nil\cf0 ];\
+                     [alertView show];\
+                 \}\
+            \});\
+        \}\
+        \cf4 else\cf0 \
+        \{\
+            dispatch_async(dispatch_get_main_queue(),^\{\
+                [app stopLoader];\
+            \});\
+            NSLog(\cf3 @"%@"\cf0 , [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);\
+            NSDictionary *Dictjson = [NSJSONSerialization\
+                                      JSONObjectWithData:data\
+                                      options:kNilOptions\
+                                      error:\cf4 nil\cf0 ];\
+            NSLog(\cf3 @"The Response of Likes: %@"\cf0 , Dictjson);\
+            \
+            value_diction = [Dictjson valueForKey:\cf3 @"response_msg"\cf0 ];\
+            responsecode=[Dictjson valueForKey:\cf3 @"response code"\cf0 ];\
+            \
+            app.notificationCount = [Dictjson valueForKey:\cf3 @"notification_count"\cf0 ];\
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [app.notificationCount intValue];\
+            NSLog(\cf3 @"The value is %@"\cf0 , value_diction);\
+            \cf4 if\cf0  ([responsecode isEqualToString:\cf3 @"no_records"\cf0 ])\
+            \{\
+                \cf4 if\cf0 (!(record == \cf4 1\cf0 ))\
+                \{\
+                    dispatch_async(dispatch_get_main_queue(),^\{\
+                        \cf2 //  [activity_home stopAnimating];\cf0 \
+                        \cf2 //  activity_home.hidden=YES;\cf0 \
+                        \
+                        UIAlertController * alert = [UIAlertController alertControllerWithTitle:\cf3 @"Alert"\cf0  message:responsecode preferredStyle:UIAlertControllerStyleAlert];\
+                        \cf4 if\cf0 (alert != \cf4 nil\cf0 )\
+                        \{\
+                            [alert addAction:[UIAlertAction actionWithTitle:\cf3 @"Ok"\cf0 \
+                                                                      style:UIAlertActionStyleDefault\
+                                                                    handler:^(UIAlertAction * action) \{\
+                                                                    \}]];\
+                            \
+                            dispatch_async(dispatch_get_main_queue(), ^ \{\
+                                [\cf4 self\cf0  presentViewController:alert animated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+                            \});\
+                        \}\
+                        \cf4 else\cf0 \
+                        \{\
+                            UIAlertView *recordalert=[[UIAlertView alloc]initWithTitle:\cf3 @"Alert"\cf0  message:responsecode delegate:\cf4 self\cf0  cancelButtonTitle:\cf3 @"ok"\cf0  otherButtonTitles: \cf4 nil\cf0 ];\
+                            [recordalert show];\
+                        \}\
+                        \
+                    \});\
+                \}\
+                \cf4 else\cf0 \
+                \{\
+                    \
+                \}\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                \cf4 for\cf0  (i=\cf4 0\cf0 ; i<[value_diction count];i++ )\
+                \{\
+                    valuedict=[value_diction objectAtIndex:i];\
+                    NSLog(\cf3 @"the valuedict is %@"\cf0 ,valuedict);\
+                    [arrcommentscount addObject:[valuedict objectForKey:\cf3 @"comments_count"\cf0 ]];\
+                    [arrpostcontent_video addObject:[valuedict objectForKey:\cf3 @"post_content"\cf0 ]];\
+                    [arrposttitle addObject:[valuedict objectForKey:\cf3 @"post_title"\cf0 ]];\
+                    [arrviewscount addObject:[valuedict objectForKey:\cf3 @"viewscount"\cf0 ]];\
+                    [arrlikecount addObject:[valuedict objectForKey:\cf3 @"likes_count"\cf0 ]];\
+                    [arrimageurl addObject:[valuedict objectForKey:\cf3 @"imag_url"\cf0 ]];\
+                    [arrrantid addObject:[valuedict objectForKey:\cf3 @"rant_id"\cf0 ]];\
+                    [arrlikearray addObject:[valuedict objectForKey:\cf3 @"like_value"\cf0 ]];\
+                    [arrdescarray addObject:[valuedict objectForKey:\cf3 @"rant_description"\cf0 ]];\
+                    [arrflagarray addObject:[valuedict objectForKey:\cf3 @"flag_value"\cf0 ]];\
+                    \
+                    \cf4 if\cf0 ([valuedict objectForKey:\cf3 @"author_name"\cf0 ] == [NSNull null])\
+                    \{\
+                        NSLog(\cf3 @"&&&&&&"\cf0 );\
+                        [arrauthor_name addObject:\cf3 @"null"\cf0 ];\
+                    \}\
+                    \cf4 else\cf0 \
+                    \{\
+                        [arrauthor_name addObject:[valuedict objectForKey:\cf3 @"author_name"\cf0 ]];\
+                    \}\
+                    [arrauthorid addObject:[valuedict objectForKey:\cf3 @"author_id"\cf0 ]];\
+                    \cf4 if\cf0 (([valuedict objectForKey:\cf3 @"profile_image"\cf0 ] == [NSNull null]) || ([valuedict objectForKey:\cf3 @"profile_image"\cf0 ] == \cf4 nil\cf0 ))\
+                    \{\
+                        NSLog(\cf3 @"!!!!!"\cf0 );\
+                        [arrprofileimage addObject:\cf3 @"null"\cf0 ];\
+                    \}\
+                    \cf4 else\cf0 \
+                    \{\
+                        [arrprofileimage addObject:[valuedict objectForKey:\cf3 @"profile_image"\cf0 ]];\
+                    \}\
+                    [arrtimesince addObject:[valuedict objectForKey:\cf3 @"time-since"\cf0 ]];\
+                \}\
+                dispatch_async(dispatch_get_main_queue(),^\{\
+                    \cf2 //  [activity_home stopAnimating];\cf0 \
+                    \cf2 //  activity_home.hidden=YES;\cf0 \
+                    \cf4 self\cf0 .mainTable.delegate = \cf4 self\cf0 ;\
+                    \cf4 self\cf0 .mainTable.dataSource = \cf4 self\cf0 ;\
+                    [mainTable reloadData];                    \
+                \});\
+            \}\
+            \
+            start = start + \cf4 10\cf0 ;\
+            app.homepage_arrViewsCount = arrlikecount;\
+            app.homepage_likeArray = arrlikearray;\
+            app.homepage_flagArray = arrflagarray;\
+            NSLog(\cf3 @"%d connectiondidfinish\\n LikeArray %@\\n, FlagArray %@"\cf0 , start, app.homepage_likeArray, app.homepage_flagArray);\
+        \}\
+    \}];\
+\}\
+\
+\
+\
+\
+-(\cf4 void\cf0 )viewDidDisappear:(\cf4 BOOL\cf0 )animated\
+\{\
+    [\cf4 super\cf0  viewDidDisappear:\cf4 YES\cf0 ];\
+    NSLog(\cf3 @"Stops myConnection"\cf0 );\
+    [myConnection cancel];\
+\}\
+\
+\
+\
+\
+#pragma mark - playbutton\
+\
+-(\cf4 IBAction\cf0 )playbuttonpressed:(\cf4 id\cf0 )sender\
+\{\
+    NSLog(\cf3 @"playbuttonpressed111"\cf0 );\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    NSString *urlString =[NSString stringWithFormat:\cf3 @"%@/web-servic/request_response.php?action=clip_views_count&clip_id=%@&user_type=%@"\cf0 ,app.baseURL, app.postID, [user objectForKey:\cf3 @"user"\cf0 ]];\
+    \
+    NSLog(\cf3 @"webrants %@"\cf0 , urlString);\
+    viewCountData= [[NSMutableData alloc]init];\
+    \
+    NSURL *url = [NSURL URLWithString:urlString];\
+    viewCountRequest = [NSURLRequest requestWithURL:url];\
+    \
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:viewCountRequest];\
+    operation.responseSerializer = [AFJSONResponseSerializer serializer];\
+    \
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, \cf4 id\cf0  responseObject)\
+     \{\
+         NSLog(\cf3 @"The Response of Likes: %@"\cf0 ,responseObject);\
+     \}\
+     failure:^(AFHTTPRequestOperation *operation, NSError *error)\
+     \{\
+         [app stopLoader];\
+         \
+         UIAlertController * alert = [UIAlertController alertControllerWithTitle:\cf3 @"Error Retrieving data"\cf0  message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];\
+         \cf4 if\cf0 (alert != \cf4 nil\cf0 )\
+         \{\
+             [alert addAction:[UIAlertAction actionWithTitle:\cf3 @"Ok"\cf0 \
+                                                       style:UIAlertActionStyleDefault\
+                                                     handler:^(UIAlertAction * action) \{\
+                                                     \}]];\
+             dispatch_async(dispatch_get_main_queue(), ^ \{\
+                 [\cf4 self\cf0  presentViewController:alert animated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+             \});\
+         \}\
+         \cf4 else\cf0 \
+         \{\
+             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:\cf3 @"Error Retrieving data"\cf0 \
+                                                                 message:[error localizedDescription]\
+                                                                delegate:\cf4 nil\cf0 \
+                                                       cancelButtonTitle:\cf3 @"Ok"\cf0 \
+                                                       otherButtonTitles:\cf4 nil\cf0 ];\
+             [alertView show];\
+         \}\
+     \}];\
+    [operation start];\
+    Webview *weburl = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"Webview"\cf0 ];\
+    weburl.str_urlhompage = app.str;\
+    NSLog(\cf3 @"HOMESTR %@"\cf0 , weburl.str_urlhompage);\
+    weburl.str_values = \cf3 @"homepage"\cf0 ;\
+    NSLog(\cf3 @"Url to load is %@"\cf0 , weburl.str_urlhompage);\
+    [\cf4 self\cf0 .navigationController pushViewController:weburl animated:\cf4 YES\cf0 ];\
+\}\
+\
+\
+\
+\
+#pragma mark - TableViewDataSource\
+\
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section\
+\{\
+    \cf4 if\cf0 (tableView.tag == \cf4 2\cf0 )\
+    \{\
+        \cf4 if\cf0  (section == \cf4 0\cf0 )\
+        \{\
+            \cf4 return\cf0  \cf4 10\cf0 ;\
+        \}\
+    \}\
+    \cf4 return\cf0  \cf4 0\cf0 ;\
+\}\
+\
+\
+- (\cf4 void\cf0 )tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath\
+\{\
+    cell.backgroundColor =  [UIColor clearColor];\
+    tableView.backgroundColor = [UIColor clearColor];\
+    subTable.backgroundColor = [UIColor clearColor];\
+    cell1.like_activity.hidden = \cf4 YES\cf0 ;\
+    cell1.flag_activity.hidden = \cf4 YES\cf0 ;\
+    mainTable.frame = CGRectMake(\cf4 0\cf0 , \cf4 108\cf0 , \cf4 self\cf0 .view.bounds.size.width, \cf4 self\cf0 .view.bounds.size.height-\cf4 108\cf0 );\
+    \
+\cf2 //    if (tableView.isDragging)\cf0 \
+\cf2 //    \{\cf0 \
+\cf2 //        UIView *myView = cell.contentView;\cf0 \
+\cf2 //        CALayer *layer = myView.layer;\cf0 \
+\cf2 //        CATransform3D rotationAndPerspectiveTransform = CATransform3DIdentity;\cf0 \
+\cf2 //        rotationAndPerspectiveTransform.m34 = 1.0 / -1000;\cf0 \
+\cf2 //        if (scrollOrientation == UIImageOrientationDown) \{\cf0 \
+\cf2 //            rotationAndPerspectiveTransform = CATransform3DRotate(rotationAndPerspectiveTransform, M_PI*0.5, 1.0f, 0.0f, 0.0f);\cf0 \
+\cf2 //        \} else \{\cf0 \
+\cf2 //            rotationAndPerspectiveTransform = CATransform3DRotate(rotationAndPerspectiveTransform, -M_PI*0.5, 1.0f, 0.0f, 0.0f);\cf0 \
+\cf2 //        \}\cf0 \
+\cf2 //        layer.transform = rotationAndPerspectiveTransform;\cf0 \
+\cf2 //        [UIView animateWithDuration:.5 animations:^\{\cf0 \
+\cf2 //            layer.transform = CATransform3DIdentity;\cf0 \
+\cf2 //        \}];\cf0 \
+\cf2 //    \}\cf0 \
+    \
+\}\
+\
+\cf2 //- (void) scrollViewDidScroll:(UIScrollView *)scrollView \{\cf0 \
+\cf2 //    scrollOrientation = scrollView.contentOffset.y > lastPos.y?UIImageOrientationDown:UIImageOrientationUp;\cf0 \
+\cf2 //    lastPos = scrollView.contentOffset;\cf0 \
+\cf2 //\}\cf0 \
+\
+\
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView\
+\cf2 // Default is 1 if not implemented\cf0 \
+\{\
+    \cf4 return\cf0  \cf4 1\cf0 ;\
+\}\
+\
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section\
+\{\
+    user = [NSUserDefaults standardUserDefaults];\
+    \cf2 //AppDelegate * app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\cf0 \
+    \cf4 if\cf0  (tableView.tag == \cf4 2\cf0 )\
+    \{\
+        \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"app_user"\cf0 ])\
+        \{\
+            NSLog(\cf3 @"%@"\cf0 , menuList);\
+            \cf4 return\cf0  [menuList count];\
+        \}\
+        \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"facebook_user"\cf0 ])\
+        \{\
+            \cf4 return\cf0  [menuList1 count];\
+        \}\
+        \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"twitter_user"\cf0 ])\
+        \{\
+            \cf4 return\cf0  [menuList1 count];\
+        \}\
+    \}\
+    \cf4 if\cf0 (tableView.tag == \cf4 1\cf0 )\
+    \{\
+        NSLog(\cf3 @"fsd %lu"\cf0 , (\cf4 unsigned\cf0  \cf4 long\cf0 )[arrposttitle count]);\
+        \cf4 return\cf0  [arrposttitle count];\
+    \}\
+    \cf4 return\cf0  \cf4 0\cf0 ;\
+\}\
+\
+\
+\
+\
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath\
+\{\
+    AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+    \cf4 if\cf0  (tableView.tag==\cf4 2\cf0 )\
+    \{\
+        \cf4 static\cf0  NSString *CellIdentifier = \cf3 @"homepagecell"\cf0 ;\
+        cell2 = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];\
+        \cf4 if\cf0  ( cell2 == \cf4 nil\cf0  )\
+        \{\
+            cell2 = [[Homepagecustomcell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];\
+        \}\
+        \cf4 if\cf0 (indexPath.row == \cf4 0\cf0 )\
+        \{\
+            \cf4 int\cf0  count = [app.notificationCount intValue];\
+            NSLog(\cf3 @"%d"\cf0 , count);\
+            \cf4 if\cf0  (count > \cf4 0\cf0 )\
+            \{\
+                \cf2 // Create label\cf0 \
+                CGFloat fontSize = \cf4 14\cf0 ;\
+                UILabel *label = [[UILabel alloc] init];\
+                label.font = [UIFont systemFontOfSize:fontSize];\
+                label.textAlignment = NSTextAlignmentCenter;\
+                label.textColor = [UIColor whiteColor];\
+                label.backgroundColor = [UIColor redColor];\
+                \
+                \cf2 // Add count to label and size to fit\cf0 \
+                label.text = [NSString stringWithFormat:\cf3 @"%d"\cf0 , count];\
+                [label sizeToFit];\
+                \
+                \cf2 // Adjust frame to be square for single digits or elliptical for numbers > 9\cf0 \
+                CGRect frame = label.frame;\
+                frame.size.height += (\cf4 int\cf0 )(\cf4 0.4\cf0 *fontSize);\
+                frame.size.width = (count <= \cf4 9\cf0 ) ? frame.size.height : frame.size.width + (\cf4 int\cf0 )fontSize;\
+                label.frame = frame;\
+                \
+                \cf2 // Set radius and clip to bounds\cf0 \
+                label.layer.cornerRadius = frame.size.height/\cf4 2.0\cf0 ;\
+                label.clipsToBounds = \cf4 true\cf0 ;\
+                \
+                \cf2 // Show label in accessory view and remove disclosure\cf0 \
+                cell2.accessoryView = label;\
+                cell2.accessoryType = UITableViewCellAccessoryNone;\
+            \}\
+        \}\
+        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;\
+        cell2.selectionStyle = UITableViewCellSelectionStyleBlue;\
+        cell2.textLabel.font = [UIFont systemFontOfSize:([UIFont systemFontSize]-\cf4 0.5\cf0 )];\
+        \
+        \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"app_user"\cf0 ])\
+        \{\
+            cell2.textLabel.text = [menuList objectAtIndex:indexPath.row];\
+            cell2.textLabel.textColor = [UIColor whiteColor];\
+            cell2.imageView.image=[UIImage imageNamed:[menuImageList objectAtIndex:indexPath.row]];\
+            \
+        \}\
+        \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"facebook_user"\cf0 ])\
+        \{\
+            cell2.textLabel.text = [menuList1 objectAtIndex:indexPath.row];\
+            cell2.textLabel.textColor = [UIColor whiteColor];\
+            \cf2 //cell.textLabel.tintColor = [UIColor greenColor];\cf0 \
+            cell2.imageView.image=[UIImage imageNamed:[menuImageList1 objectAtIndex:indexPath.row]];\
+        \}\
+        \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"twitter_user"\cf0 ])\
+        \{\
+            cell2.textLabel.text = [menuList1 objectAtIndex:indexPath.row];\
+            cell2.textLabel.textColor = [UIColor whiteColor];\
+            \cf2 //  cell.textLabel.tintColor = [UIColor greenColor];\cf0 \
+            cell2.imageView.image=[UIImage imageNamed:[menuImageList1 objectAtIndex:indexPath.row]];\
+        \}\
+        \cf4 return\cf0  cell2;\
+    \}\
+    \cf4 if\cf0 (tableView.tag == \cf4 1\cf0 )\
+    \{\
+        \cf4 if\cf0 (arrposttitle.count == \cf4 0\cf0 )\
+        \{\
+            \
+        \}\
+        \cf4 else\cf0 \
+        \{\
+            \cf4 static\cf0  NSString *cellIdentifier = \cf3 @"Homecellidentifier"\cf0 ;\
+            cell1 = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];\
+            \cf4 if\cf0  ( cell1 == \cf4 nil\cf0  )\
+            \{\
+                cell1 = [[Homepagecustomcell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];\
+            \}\
+            \
+            \cf4 if\cf0  (indexPath.row == [\cf4 self\cf0 .arrposttitle count] - \cf4 1\cf0 )\
+            \{\
+                record = \cf4 1\cf0 ;\
+                \cf4 if\cf0 (![responsecode isEqualToString:\cf3 @"no_records"\cf0 ])\
+                \{\
+                    [\cf4 self\cf0  servicecalling];\
+                \}\
+            \}\
+            \
+            cell1.selectionStyle=UITableViewCellSelectionStyleNone;\
+            tableView.separatorStyle = UITableViewCellSeparatorStyleNone;\
+            \
+    \cf2 //Title\cf0 \
+            UITextView * usertitle=(UITextView *)[cell1 viewWithTag:\cf4 115\cf0 ];\
+            usertitle.scrollEnabled = \cf4 YES\cf0 ;\
+            NSRange range = NSMakeRange(usertitle.text.length - (usertitle.text.length + \cf4 1\cf0 ),\cf4 1\cf0 );\
+            [usertitle scrollRangeToVisible:range];\
+            \
+            \cf4 if\cf0 ([arrposttitle objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                usertitle.text = \cf3 @""\cf0 ;\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                usertitle.text = [arrposttitle objectAtIndex:indexPath.row];\
+                NSLog(\cf3 @"username %@"\cf0 , usertitle.text);\
+            \}\
+            \
+    \cf2 //Viewscount\cf0 \
+            UIButton * viewscount=(UIButton *)[cell1 viewWithTag:\cf4 19\cf0 ];\
+            \cf4 if\cf0 ([arrviewscount objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                [viewscount setTitle:\cf3 @""\cf0  forState:UIControlStateNormal];\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                [viewscount setTitle:[NSString stringWithFormat:\cf3 @"%@"\cf0 ,[arrviewscount objectAtIndex:indexPath.row]] forState:UIControlStateNormal];\
+                NSLog(\cf3 @"commentscount %@"\cf0 ,viewscount);\
+            \}\
+            \
+            \
+    \cf2 //LikeValue\cf0 \
+            \cf4 if\cf0 ([arrlikearray objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                \
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                NSLog(\cf3 @"Like Value Array - %@"\cf0 , [arrlikearray objectAtIndex:indexPath.row]);\
+                \cf4 if\cf0 ([[arrlikearray objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:\cf4 1\cf0 ]])\
+                \{\
+                    cell1.likebutton.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:\cf3 @"thumb170.png"\cf0 ]];\
+                \}\
+                \cf4 if\cf0 ([[arrlikearray objectAtIndex:indexPath.row] isEqual:[NSNumber numberWithInt:\cf4 0\cf0 ]])\
+                \{\
+                    cell1.likebutton.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:\cf3 @"thumb70.png"\cf0 ]];\
+                \}\
+            \}\
+            \
+            \
+    \cf2 //LikeCount\cf0 \
+            \cf4 if\cf0 ([app.homepage_arrViewsCount objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                [cell1.likebutton setTitle:\cf3 @""\cf0  forState:UIControlStateNormal];\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                [cell1.likebutton setTitle:[NSString stringWithFormat:\cf3 @"%@"\cf0 , [app.homepage_arrViewsCount objectAtIndex:indexPath.row]] forState:UIControlStateNormal];\
+            \}\
+            \
+    \cf2 //Flag\cf0 \
+            NSString * temp = [NSString stringWithFormat:\cf3 @"%@"\cf0 , [app.homepage_flagArray objectAtIndex:indexPath.row]];\
+            NSLog(\cf3 @"%@"\cf0 , temp);\
+            \
+            \cf4 if\cf0 ([temp isEqual:\cf3 @"1"\cf0 ])\
+            \{\
+                [cell1.flagbutton setTitle:\cf3 @"unflag"\cf0  forState:UIControlStateNormal];\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                [cell1.flagbutton setTitle:\cf3 @"Flag"\cf0  forState:UIControlStateNormal];\
+            \}\
+            \
+            \
+            cell1.index = indexPath.row;\
+            cell1.indexpath = indexPath;\
+            NSLog(\cf3 @"Count is %lu"\cf0 ,(\cf4 unsigned\cf0  \cf4 long\cf0 )arrposttitle.count);\
+            \
+    \cf2 //Description\cf0 \
+            UITextView * description = (UITextView *)[cell1 viewWithTag:\cf4 29\cf0 ];\
+            description.scrollEnabled = \cf4 YES\cf0 ;\
+            NSRange range1 = NSMakeRange(description.text.length - (description.text.length + \cf4 1\cf0 ),\cf4 1\cf0 );\
+            [description scrollRangeToVisible:range1];\
+            \
+            \cf4 if\cf0 ([arrdescarray objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                description.text = \cf3 @""\cf0 ;\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                description.text = [arrdescarray objectAtIndex:indexPath.row];\
+                NSLog(\cf3 @"username %@"\cf0 ,description);\
+            \}\
+            \
+    \cf2 //Author\cf0 \
+            UILabel *authorusername_lbl=(UILabel *)[cell1 viewWithTag:\cf4 5\cf0 ];\
+            \cf4 if\cf0 ([arrauthor_name objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                [authorusername_lbl setText:\cf3 @""\cf0 ];\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                [authorusername_lbl setText:[arrauthor_name objectAtIndex:indexPath.row]];\
+            \}\
+            \
+    \cf2 //Time\cf0 \
+            UILabel *timelabel = (UILabel *)[cell1 viewWithTag:\cf4 8\cf0 ];\
+            \cf4 if\cf0 ([arrtimesince objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                [timelabel setText:\cf3 @""\cf0 ];\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                [timelabel setText:[arrtimesince objectAtIndex:indexPath.row]];\
+                NSLog(\cf3 @"timevalue%@"\cf0 ,timelabel);\
+            \}\
+            \
+            \
+    \cf2 //CommentCount\cf0 \
+            UIButton *commentscount=(UIButton *)[cell1 viewWithTag:\cf4 3\cf0 ];\
+            \cf4 if\cf0 ([arrcommentscount objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                [commentscount setTitle:\cf3 @""\cf0  forState:UIControlStateNormal];\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                [commentscount setTitle:[NSString stringWithFormat:\cf3 @"%@"\cf0 ,[arrcommentscount objectAtIndex:indexPath.row]] forState:UIControlStateNormal];\
+                NSLog(\cf3 @"commentscount %@"\cf0 ,commentscount);\
+            \}\
+            \
+            NSString *imageurl=[NSString stringWithFormat:\cf3 @"%@"\cf0 ,[arrimageurl objectAtIndex:indexPath.row]];\
+            NSLog(\cf3 @"imageurl %@"\cf0 ,imageurl);\
+            \
+            userimage=(UIImageView *)[cell1 viewWithTag:\cf4 4\cf0 ];\
+            userimage.layer.borderColor=[UIColor blackColor].CGColor;\
+            UIColor *borderColor = [UIColor colorWithRed:\cf4 182\cf0  green:\cf4 10\cf0  blue:\cf4 96\cf0  alpha:\cf4 1.0\cf0 ];\
+            [userimage.layer setBorderColor:borderColor.CGColor];\
+            [userimage.layer setBorderWidth:\cf4 2.0\cf0 ];\
+            \
+            userimage.layer.cornerRadius = userimage.bounds.size.height/\cf4 2\cf0 ;\
+            userimage.layer.masksToBounds = \cf4 YES\cf0 ;\
+            \
+            \cf4 if\cf0 ([arrprofileimage objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                userimage.image = [UIImage imageNamed:\cf3 @"loading.png"\cf0 ];\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                [userimage setImageWithURL:[NSURL URLWithString:[arrprofileimage objectAtIndex:indexPath.row]] placeholderImage:[UIImage imageNamed:\cf3 @"loading.png"\cf0 ]];\
+                NSLog(\cf3 @"image %@"\cf0 ,userimage);\
+            \}\
+            \
+            \
+            UIImageView *snapshot=(UIImageView *)[cell1 viewWithTag:\cf4 6\cf0 ];\
+            NSLog(\cf3 @"%f %f"\cf0 , snapshot.bounds.size.width, snapshot.bounds.size.height);\
+            NSLog(\cf3 @"Image View %f %f"\cf0 , app.imageWidth, app.imageHeight);\
+            \
+            \
+            snapshot.layer.borderColor=[UIColor blackColor].CGColor;\
+            UIColor *borderColor1 = [UIColor colorWithRed:\cf4 182\cf0  green:\cf4 10\cf0  blue:\cf4 96\cf0  alpha:\cf4 0.2\cf0 ];\
+            [snapshot.layer setBorderColor:borderColor1.CGColor];\
+            [snapshot.layer setBorderWidth:\cf4 5.0\cf0 ];\
+            \
+            \cf4 if\cf0 ([arrimageurl objectAtIndex:indexPath.row] == [NSNull null])\
+            \{\
+                snapshot.image = [UIImage imageNamed:\cf3 @"loading.png"\cf0 ];\
+            \}\
+            \cf4 else\cf0 \
+            \{\
+                [snapshot setImageWithURL:[NSURL URLWithString:[arrimageurl objectAtIndex:indexPath.row]] placeholderImage:[UIImage imageNamed:\cf3 @"loading.png"\cf0 ]];\
+                NSLog(\cf3 @"image %@"\cf0 ,snapshot);\
+            \}\
+            \
+            \
+            \
+            UIButton *playbutton=(UIButton *)[cell1 viewWithTag:\cf4 7\cf0 ];\
+            [playbutton setImage:[UIImage imageNamed:\cf3 @"playButton.png"\cf0 ] forState:UIControlStateNormal];\
+            [playbutton setTag:indexPath.row];\
+            [playbutton addTarget:\cf4 self\cf0  action:\cf4 @selector\cf0 (playbuttonpressed:) forControlEvents:UIControlEventTouchUpInside];\
+            \
+            AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+            app.homearr = arrpostcontent_video;\
+            app.homecommentid = arrrantid;\
+            app.rantarr = arrrantid;\
+            \
+            app.postTitle = arrposttitle;\
+            app.authorName = arrauthor_name;\
+            NSLog(\cf3 @"%@fs"\cf0 , app.homearr);\
+        \}\
+        \cf4 return\cf0  cell1;\
+    \}\
+    \cf4 return\cf0  \cf4 nil\cf0 ;\
+\}\
+\
+\
+- (\cf4 void\cf0 )tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath\
+\{\
+    \cf2 //AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\cf0 \
+    \
+       cell2.tintColor = [UIColor orangeColor];\
+       cell2.selectionStyle = UITableViewCellSelectionStyleBlue;\
+        \cf4 if\cf0  (tableView.tag==\cf4 2\cf0 )\
+        \{\
+            \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"app_user"\cf0 ])\
+            \{\
+                homepagevalue=[menuList objectAtIndex:indexPath.row];\
+                NSLog(\cf3 @"homepagevalue: %@"\cf0 ,homepagevalue);\
+            \}\
+            \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"facebook_user"\cf0 ])\
+            \{\
+                homepagevalue=[menuList1 objectAtIndex:indexPath.row];\
+                NSLog(\cf3 @"homepagevalue: %@"\cf0 ,homepagevalue);\
+            \}\
+            \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"twitter_user"\cf0 ])\
+            \{\
+                homepagevalue=[menuList1 objectAtIndex:indexPath.row];\
+                NSLog(\cf3 @"homepagevalue: %@"\cf0 ,homepagevalue);\
+            \}\
+            \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Audio"\cf0 ])\
+            \{\
+                activity_menu.hidden = \cf4 NO\cf0 ;\
+                [activity_menu startAnimating];\
+                AudioPage * audioPage = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"AudioPage"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:audioPage];\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Notifications"\cf0 ])\
+            \{\
+                activity_menu.hidden = \cf4 NO\cf0 ;\
+                [activity_menu startAnimating];\
+                NotificationView * view = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"NotificationView"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:view];\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Share"\cf0 ])\
+            \{\
+                MyActivityItemProvider * message = [[MyActivityItemProvider alloc]initWithPlaceholderItem:\cf4 nil\cf0 ];\
+                NSArray * activityItems;\
+                UIImage * image = [UIImage imageNamed:\cf3 @"icon"\cf0 ];\
+                \cf4 if\cf0  (image != \cf4 nil\cf0 )\
+                \{\
+                    activityItems = \cf4 @[\cf0 message, image\cf4 ]\cf0 ;\
+                \}\
+                \cf4 else\cf0 \
+                \{\
+                    activityItems = \cf4 @[\cf0 message\cf4 ]\cf0 ;\
+                \}\
+                NSLog(\cf3 @"%@"\cf0 , message);\
+                UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:\cf4 nil\cf0 ];\
+                [activityController setCompletionHandler:^(NSString *activityType, \cf4 BOOL\cf0  completed)\
+                 \{\
+                     [\cf4 self\cf0  hideMenu];\
+                 \}];\
+                [\cf4 self\cf0  presentViewController:activityController animated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Profile"\cf0 ])\
+            \{\
+                activity_menu.hidden = \cf4 NO\cf0 ;\
+                [activity_menu startAnimating];\
+                Profilepage *profilepage = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"Profilepage"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:profilepage];\
+            \}\
+        \
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Home"\cf0 ])\
+            \{\
+                activity_menu.hidden = \cf4 NO\cf0 ;\
+                [activity_menu startAnimating];\
+                Homepage *homepage = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"Homepage"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:homepage];\
+            \}\
+            \
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Articles"\cf0 ])\
+            \{\
+                Articlepage *articlepage = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"Articlepage"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:articlepage];\
+            \}\
+            \
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"ChangePassword"\cf0 ])\
+            \{\
+                ChangePassword *change = [[UIStoryboard storyboardWithName:\cf3 @"Login"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"ChangePassword"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:change];\
+            \}\
+            \
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Search"\cf0 ])\
+            \{\
+                AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+                app.backcamera=\cf3 @"discover"\cf0 ;\
+                DiscoverPage *discover = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"DiscoverPage"\cf0 ];\
+               \
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:discover];\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"MyActivity"\cf0 ])\
+            \{               \
+                Activitypage *activitypage  = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"Activitypage"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:activitypage];\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Videos"\cf0 ])\
+            \{\
+                VideosPage *videopage = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"VideosPage"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:videopage];\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"WebRants"\cf0 ])\
+            \{\
+                WebRants * view = [[UIStoryboard storyboardWithName:\cf3 @"FirstModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"WebRants"\cf0 ];\
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:view];\
+            \}\
+            \cf4 else\cf0  \cf4 if\cf0  ([homepagevalue isEqualToString:\cf3 @"Logout"\cf0 ])\
+            \{\
+                AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+                [app ShowLoaderWithText:\cf3 @""\cf0  detail:\cf3 @"Loading..."\cf0 ];\
+                user = [NSUserDefaults standardUserDefaults];\
+                NSString *urlString =[NSString stringWithFormat:\cf3 @"%@/web-servic/request_response.php?action=logout&user_id=%@&user_type=%@"\cf0 , app.baseURL, [user objectForKey:\cf3 @"unique_id"\cf0 ], [user objectForKey:\cf3 @"user"\cf0 ]];\
+                NSLog(\cf3 @"**** %@"\cf0 , urlString);\
+                \
+                NSURL * url = [NSURL URLWithString:urlString];\
+                request = [NSURLRequest requestWithURL:url];\
+                \
+                AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];\
+                operation.responseSerializer = [AFJSONResponseSerializer serializer];\
+                [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, \cf4 id\cf0  responseObject)\
+                 \{\
+                     [app stopLoader];\
+                     NSLog(\cf3 @"%@"\cf0 , responseObject);\
+                     NSString * result = [responseObject objectForKey:\cf3 @"response_msg"\cf0 ];\
+                     \cf4 if\cf0 ([result isEqualToString:\cf3 @"success"\cf0 ])\
+                     \{\
+                         NSLog(\cf3 @"Logout successfully"\cf0 );\
+                     \}\
+                 \}\
+                 failure:^(AFHTTPRequestOperation *operation, NSError *error)\
+                 \{\
+                     [app stopLoader];\
+                     UIAlertController * alert = [UIAlertController alertControllerWithTitle:\cf3 @"Alert"\cf0  message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];\
+                     \cf4 if\cf0 (alert != \cf4 nil\cf0 )\
+                     \{\
+                         [alert addAction:[UIAlertAction actionWithTitle:\cf3 @"Ok"\cf0 \
+                                                                   style:UIAlertActionStyleDefault\
+                                                                 handler:^(UIAlertAction * action) \{\
+                                                                 \}]];\
+                         dispatch_async(dispatch_get_main_queue(), ^ \{\
+                             [\cf4 self\cf0  presentViewController:alert animated:\cf4 YES\cf0  completion:\cf4 nil\cf0 ];\
+                         \});\
+                     \}\
+                     \cf4 else\cf0 \
+                     \{\
+                         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:\cf3 @"Alert"\cf0 \
+                                                                             message:[error localizedDescription]\
+                                                                            delegate:\cf4 nil\cf0 \
+                                                                   cancelButtonTitle:\cf3 @"Ok"\cf0 \
+                                                                   otherButtonTitles:\cf4 nil\cf0 ];\
+                         [alertView show];\
+                     \}\
+                     \
+                 \}];\
+                [operation start];                \
+                app.backvalue = \cf3 @"changed"\cf0 ;\
+                \cf4 if\cf0 ([[user objectForKey:\cf3 @"user"\cf0 ] isEqualToString:\cf3 @"twitter_user"\cf0 ])\
+                \{\
+                    [[Twitter sharedInstance]logOut];\
+                \}\
+                user = [NSUserDefaults standardUserDefaults];\
+                [user removeObjectForKey:\cf3 @"username"\cf0 ];\
+                [user removeObjectForKey:\cf3 @"profile_name"\cf0 ];\
+                [user removeObjectForKey:\cf3 @"email"\cf0 ];\
+                [user removeObjectForKey:\cf3 @"profile_image"\cf0 ];\
+                [UIApplication sharedApplication].applicationIconBadgeNumber = \cf4 0\cf0 ;\
+                LoginFb *login = [[UIStoryboard storyboardWithName:\cf3 @"Login"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"LoginFb"\cf0 ];\
+               \
+                [\cf4 self\cf0 .navigationController trvs_pushViewControllerWithNavigationControllerTransition:login];\
+            \}\
+        \}\
+        \cf4 else\cf0 \
+        \{\
+            [tableView deselectRowAtIndexPath:indexPath animated:\cf4 YES\cf0 ];\
+        \}\
+\}\
+\
+\
+#pragma mark - Huddle Section\
+-(\cf4 IBAction\cf0 )huddlebtn:(\cf4 id\cf0 )sender\
+\{\
+    HuddleListViewController * view = [[UIStoryboard storyboardWithName:\cf3 @"ThirdModule"\cf0  bundle:\cf4 nil\cf0 ] instantiateViewControllerWithIdentifier:\cf3 @"HuddleList"\cf0 ];\
+    [\cf4 self\cf0 .navigationController pushViewController:view animated:\cf4 YES\cf0 ];\
+\}\
+\
+\
+\
+\
+\
+#pragma mark - DidReceiveMemoryWarning\
+- (\cf4 void\cf0 )didReceiveMemoryWarning\
+\{\
+    [\cf4 super\cf0  didReceiveMemoryWarning];\
+    \
+\}\
+\
+\
+-(\cf4 void\cf0 )editingInfoWasFinished\
+\{\
+    NSLog(\cf3 @"EditingInfoWasFinished"\cf0 );\
+    [\cf4 self\cf0  refreshStart];\
+\}\
+\
+\cf2 //didselect\cf0 \
+    \cf2 /* else\
+     \{\
+     if (tableView.tag==15)\
+     \{\
+     NSString*homepagevalue=[profilesetting_array1 objectAtIndex:indexPath.row];\
+     NSLog(@"homepagevalue: %@",homepagevalue);\
+     if ([homepagevalue isEqualToString:@"Profile"])\
+     \{\
+     AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:app.Device_typemodel bundle:nil];\
+     Profilepage *profilepage = [storyboard instantiateViewControllerWithIdentifier:@"Profilepage"];\
+     [self.navigationController pushViewController:profilepage animated:YES];\
+     \
+     \}\
+     \
+     else if ([homepagevalue isEqualToString:@"videosipad.png"])\
+     \{\
+     AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+     app.backcamera_video=@"video";\
+     \
+     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:app.Device_typemodel bundle:nil];\
+     VideosPage *videopage = [storyboard instantiateViewControllerWithIdentifier:@"VideosPage"];\
+     [self.navigationController pushViewController:videopage animated:YES];\
+     \
+     \
+     \}\
+     else if ([homepagevalue isEqualToString:@"articlesipad.png"])\
+     \{\
+     AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+     app.backcamera_article=@"article";\
+     \
+     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:app.Device_typemodel bundle:nil];\
+     Articlepage *articlepage = [storyboard instantiateViewControllerWithIdentifier:@"Articlepage"];\
+     [self.navigationController pushViewController:articlepage animated:YES];\
+     \
+     \
+     \}\
+     else if ([homepagevalue isEqualToString:@"change_passwordipad.png"])\
+     \{\
+     AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:app.Device_typemodel bundle:nil];\
+     ChangePassword *change = [storyboard instantiateViewControllerWithIdentifier:@"ChangePassword"];\
+     [self.navigationController pushViewController:change animated:YES];\
+     \
+     \
+     \}\
+     else if ([homepagevalue isEqualToString:@"discoveripad.png"])\
+     \{\
+     \
+     \
+     AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+     app.backcamera=@"discover";\
+     \
+     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:app.Device_typemodel bundle:nil];\
+     DiscoverPage *discover = [storyboard instantiateViewControllerWithIdentifier:@"DiscoverPage"];\
+     [self.navigationController pushViewController:discover animated:YES];\
+     \
+     \
+     \}\
+     \
+     else if ([homepagevalue isEqualToString:@"activityipad.png"])\
+     \{\
+     AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+     app.backcamera_activity=@"activity";\
+     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:app.Device_typemodel bundle:nil];\
+     Activitypage *activitypage = [storyboard instantiateViewControllerWithIdentifier:@"Activitypage"];\
+     [self.navigationController pushViewController:activitypage animated:YES];\
+     \
+     \}\
+     else if ([homepagevalue isEqualToString:@"homeipad.png"])\
+     \{\
+     AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+     \
+     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:app.Device_typemodel bundle:nil];\
+     Homepage *homepage = [storyboard instantiateViewControllerWithIdentifier:@"Homepage"];\
+     [self.navigationController pushViewController:homepage animated:YES];\
+     \
+     \
+     \}\
+     \
+     else if ([homepagevalue isEqualToString:@"logoutipad.png"])\
+     \{\
+     AppDelegate *app = (AppDelegate *) [[UIApplication sharedApplication]delegate];\
+     app.backvalue=@"changed";\
+     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:app.Device_typemodel bundle:nil];\
+     LoginFb *login = [storyboard instantiateViewControllerWithIdentifier:@"LoginFb"];\
+     [self.navigationController pushViewController:login animated:YES];\
+     \
+     \}\
+     \}\
+     else\
+     \{\
+     [tableView deselectRowAtIndexPath:indexPath animated:YES];\
+     \
+     \}\
+     \}\
+     \}\
+     */\cf0 \
+\
+\cf2 //rowintable\cf0 \
+\cf2 /*else\
+ \{\
+ if (tableView.tag==15)\
+ \{\
+ return [profilesetting_array1 count];\
+ \}\
+ else\
+ \{\
+ return [arrposttitle count];\
+ \}\
+ \
+ \}*/\cf0 \
+\
+\
+\
+\cf2 /*\
+ FBSDKShareDialog *shareDialog = [[FBSDKShareDialog alloc]init];\
+ NSURL *videoURL=url_new;\
+ FBSDKShareVideo *video = [[FBSDKShareVideo alloc] init];\
+ video.videoURL = videoURL;\
+ FBSDKShareVideoContent *content = [[FBSDKShareVideoContent alloc] init];\
+ content.video = video;\
+ shareDialog.shareContent = content;\
+ shareDialog.delegate=self;\
+ [shareDialog show];\
+ */\cf0 \
+\
+\cf2 // NSArray *objectsToShare = [NSArray arrayWithObjects:message, videoPath, nil];\cf0 \
+\
+\cf2 // NSArray *objectsToShare = [NSArray arrayWithObjects:message, videoPath, nil];\cf0 \
+\
+\cf2 // NSString *videoToShare = @"{\field{\*\fldinst{HYPERLINK "http://www.fanthem.com/huddle/uploads/180/297/587_2015-04-30_19-07-36.mp4"}}{\fldrslt \cf7 http://www.fanthem.com/huddle/uploads/180/297/587_2015-04-30_19-07-36.mp4}}";\cf0 \
+\cf2 // NSURL *videoPath = [NSURL URLWithString:videoToShare];\cf0 \
+\
+\
+\
+\cf2 /*\
+ NSArray *activitiesItems = @[@"A string to be used for MyFeedbackActivity"];\
+ UIActivityViewController *activityVC = [[UIActivityViewController alloc]initWithActivityItems:activitiesItems applicationActivities:nil];\
+ // Removed un-needed activities\
+ activityVC.excludedActivityTypes = [[NSArray alloc] initWithObjects:\
+ UIActivityTypeCopyToPasteboard,\
+ UIActivityTypePostToWeibo,\
+ UIActivityTypePostToFacebook,\
+ UIActivityTypeSaveToCameraRoll,\
+ UIActivityTypeCopyToPasteboard,\
+ UIActivityTypeMail,\
+ UIActivityTypeMessage,\
+ UIActivityTypeAssignToContact,\
+ nil];\
+ [self presentViewController:activityVC animated:YES completion:nil];\
+ */\cf0 \
+\
+\
+\
+\cf2 //  BOOL x = ABAddressBookGetAuthorizationStatus();\cf0 \
+\cf2 /*  UIAlertView * alert = [[UIAlertView alloc]initWithTitle:[NSString stringWithFormat:@"StatusAuthorizedFirstTime - %d", x] message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];\
+ [alert show];\
+ */\cf0 \
+\cf2 // If the app is authorized to access the first time then add the contact\cf0 \
+\cf2 //self.mscrollview.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:@"latest-bg-320.png"]];\cf0 \
+\
+\cf2 //self.view2.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:@"latest-bg-320.png"]];\cf0 \
+\
+\cf2 //  NSLog(@"the system device %@",app.Device_typemodel);\cf0 \
+\
+\cf2 //  self.view.backgroundColor=[UIColor colorWithPatternImage:[UIImage imageNamed:@"latest-bg-320.png"]];\cf0 \
+\
+\cf2 //  self.profileButton.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"menuview_bkgrdiphone.png"]];\cf0 \
+\
+\
+\cf2 //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=General"]];\cf0 \
+\
+\
+\cf2 // [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"{\field{\*\fldinst{HYPERLINK "https://twitter.com/plungeint"}}{\fldrslt \cf7 https://twitter.com/plungeint}}"]];\cf0 \
+\
+\cf2 // NSURL *instagramURL = [NSURL URLWithString:@"instagram://media?id=400"];\cf0 \
+\
+\cf2 //[[UIApplication sharedApplication] openURL:instagramURL];\cf0 \
+\cf2 //  NSString * Caption  = message;\cf0 \
+\cf2 // NSString * escapedCaption = [Caption stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];\cf0 \
+\
+\cf2 //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=General"]];\cf0 \
+\
+\
+\cf2 // [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"{\field{\*\fldinst{HYPERLINK "https://twitter.com/plungeint"}}{\fldrslt \cf7 https://twitter.com/plungeint}}"]];\cf0 \
+\
+\cf2 // NSURL *instagramURL = [NSURL URLWithString:@"instagram://media?id=400"];\cf0 \
+\cf2 //[[UIApplication sharedApplication] openURL:instagramURL];\cf0 \
+\
+\cf2 /*\
+ - (BOOL)prefersStatusBarHidden\
+ \{\
+ NSLog(@"KKKKKK");\
+ return YES;\
+ \}\
+ */\cf0 \
+\
+\cf2 // Do your cell customisation\cf0 \
+\cf2 // cell.titleLabel.text = data.title;\cf0 \
+\cf2 /* NSLog(@"%d willDisplayCell", start);\
+ if (indexPath.row == [self.arrposttitle count] - 1)\
+ \{\
+ [self servicecalling];\
+ \}\
+ */\cf0 \
+\
+\
+\cf2 /*\
+ - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate\{\
+ // UITableView only moves in one direction, y axis\
+ CGFloat currentOffset = scrollView.contentOffset.y;\
+ CGFloat maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height;\
+ \
+ //NSInteger result = maximumOffset - currentOffset;\
+ \
+ // Change 10.0 to adjust the distance from bottom\
+ if (maximumOffset - currentOffset <= 10.0) \{\
+ [self servicecalling];\
+ //[self methodThatAddsDataAndReloadsTableView];\
+ \}\
+ \}\
+ */\cf0 \
+\
+\
+\cf2 /*\
+ - (void)viewDidLayoutSubviews\
+ \{\
+ [super viewDidLayoutSubviews];\
+ [homepagetabel setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];\
+ \}\
+ */\cf0 \
+\
+\
+\cf2 /*\
+ if(i == 10)\
+ \{\
+ tempLike = [NSString stringWithFormat:@"%@", [arrlikearray objectAtIndex:indexPath.row]];\
+ tempFlag =[NSString stringWithFormat:@"%@", [arrflagarray objectAtIndex:indexPath.row]];\
+ NSLog(@"%@%@ ***", tempLike, tempFlag);\
+ if([tempLike isEqual:@"1"])\
+ \{\
+ [cell1.likebutton setTitle:tempLike forState:UIControlStateNormal];\
+ \}\
+ else\
+ \{\
+ [cell1.likebutton setTitle:tempLike forState:UIControlStateNormal];\
+ \}\
+ if([tempFlag isEqual:@"1"])\
+ \{\
+ [cell1.flagbutton setTitle:@"unflag" forState:UIControlStateNormal];\
+ \}\
+ else\
+ \{\
+ [cell1.flagbutton setTitle:@"Flag" forState:UIControlStateNormal];\
+ \}\
+ i=11;\
+ \}\
+ */\cf0 \
+\
+\cf2 //[cell1.flagbutton setTitle:[NSString stringWithFormat:@"%@", [app.homepage_flagArray objectAtIndex:indexPath.row]] forState:UIControlStateNormal];\cf0 \
+\
+\
+\
+\
+\
+\cf2 /*\
+ -(IBAction)playbuttonpressed:(id)sender\
+ \{\
+ //    UIWebView *webview;\
+ //    NSLog(@"Url to load is %@",[arrpostcontent_video objectAtIndex:[sender tag]]);\
+ //    NSURL *urlStr = [[NSURL alloc]initWithString:[arrpostcontent_video objectAtIndex:[sender tag]]];\
+ //    NSURLRequest *urlRequest = [[NSURLRequest alloc]initWithURL:urlStr];\
+ //    webview.delegate = self;\
+ //    [webview loadRequest:urlRequest];\
+ NSLog(@"image %d",cell1.index);\
+ NSLog(@"Url to load is %@",[arrpostcontent_video objectAtIndex:cell1.index]);\
+ \
+ Webview *weburl = [[UIStoryboard storyboardWithName:@"FirstModule" bundle:nil] instantiateViewControllerWithIdentifier:@"Webview"];\
+ \
+ weburl.str_urlhompage=[NSString stringWithFormat:@"%@",[arrpostcontent_video objectAtIndex:cell1.index]];\
+ NSLog(@"ARRAY %@", [arrpostcontent_video objectAtIndex:cell1.index]);\
+ weburl.str_values=@"homepage";\
+ NSLog(@"Url to load is %@",weburl.str_urlhompage);\
+ [self.navigationController pushViewController:weburl animated:YES];\
+ \}\
+ */\cf0 \
+\
+\cf2 /*\
+ -(IBAction)playbuttonpressed:(id)sender\
+ \{\
+ NSLog(@"Playbuttonpressed");\
+ NSLog(@"ARRAR %@", [arrpostcontent_video objectAtIndex:cell1.index]);\
+ NSString * urlString = [NSString stringWithFormat:@"%@",[arrpostcontent_video objectAtIndex:cell1.index]];\
+ NSURL * url = [NSURL URLWithString:urlString];\
+ \
+ moviePlayer = [[MPMoviePlayerController alloc]initWithContentURL:url];\
+ [moviePlayer.view setFrame:CGRectMake(10, 66, 299, 263)];\
+ [[NSNotificationCenter defaultCenter] addObserver:self\
+ selector:@selector(moviePlayBackDidFinish:)\
+ name:MPMoviePlayerPlaybackDidFinishNotification\
+ object:moviePlayer];\
+ [cell1.contentView addSubview:moviePlayer.view];\
+ \
+ moviePlayer.fullscreen = NO;\
+ moviePlayer.allowsAirPlay =YES;\
+ // [moviePlayer prepareToPlay];\
+ [moviePlayer play];\
+ // [moviePlayer setShouldAutoplay:YES];\
+ \
+ NSLog(@"image %ld",(long)cell1.index);\
+ NSLog(@"Url to load is %@",[arrpostcontent_video objectAtIndex:cell1.index]);\
+ \}\
+ \
+ \
+ - (void)moviePlayBackDidFinish:(NSNotification*)notification\
+ \{\
+ NSLog(@"DidFinish movie play");\
+ moviePlayer = [notification object];\
+ \
+ [[NSNotificationCenter defaultCenter] removeObserver:self\
+ name:MPMoviePlayerPlaybackDidFinishNotification object:moviePlayer];\
+ if ([moviePlayer respondsToSelector:@selector(setFullscreen:animated:)])\
+ \{\
+ [moviePlayer.view removeFromSuperview];\
+ \}\
+ \}\
+ */\cf0 \
+\
+\
+\cf2 /*\
+ // NSIndexPath *indexPath1 = [self.mainTable indexPathForCell:cell1];\
+ // NSLog(@"%d ",(int)indexPath1);\
+ \
+ //    UIWebView *webview;\
+ //    NSLog(@"Url to load is %@",[arrpostcontent_video objectAtIndex:[sender tag]]);\
+ //    NSURL *urlStr = [[NSURL alloc]initWithString:[arrpostcontent_video objectAtIndex:[sender tag]]];\
+ //    NSURLRequest *urlRequest = [[NSURLRequest alloc]initWithURL:urlStr];\
+ //    webview.delegate = self;\
+ //    [webview loadRequest:urlRequest];\
+ \
+ playbutton = (UIButton *)sender;\
+ CGRect buttonFrame = [playbutton convertRect:playbutton.bounds toView:self.mainTable];\
+ NSIndexPath *indexPath = [self.mainTable indexPathForRowAtPoint:buttonFrame.origin];\
+ \
+ NSLog(@"%@INDEXPATHS", indexPath);\
+ \
+ cell1.arr = arrpostcontent_video;\
+ NSLog(@"%@controller", cell1.arr);\
+ \
+ NSLog(@"image %d",cell1.index);\
+ NSLog(@"Url to load is %@",[arrpostcontent_video objectAtIndex:cell1.index]);\
+ */\cf0 \
+\
+\cf2 /*\
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response\
+\{\
+    [returnData setLength:0];\
+\}\
+\
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data\
+\{\
+    [returnData appendData:data];\
+\}\
+\
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection\
+\{\
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    NSDictionary *Dictjson = [NSJSONSerialization\
+                              JSONObjectWithData:returnData\
+                              options:kNilOptions\
+                              error:nil];\
+    NSLog(@"The Response of Likes: %@",Dictjson);\
+    \
+//    [activity_home stopAnimating];\
+//    activity_home.hidden=YES;\
+    [app stopLoader];\
+    value_diction = [Dictjson valueForKey:@"response_msg"];\
+    responsecode=[Dictjson valueForKey:@"response code"];\
+    app.notificationCount = [Dictjson valueForKey:@"notification_count"];\
+    [UIApplication sharedApplication].applicationIconBadgeNumber = [app.notificationCount intValue];\
+    NSLog(@"The value is %@", value_diction);\
+\
+    if ([responsecode isEqualToString:@"no_records"])\
+    \{\
+        if(!(record == 1))\
+        \{\
+            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"Alert" message:responsecode preferredStyle:UIAlertControllerStyleAlert];\
+            if(alert != nil)\
+            \{\
+                [alert addAction:[UIAlertAction actionWithTitle:@"Ok"\
+                                                          style:UIAlertActionStyleDefault\
+                                                        handler:^(UIAlertAction * action) \{\
+                                                            \
+                                                        \}]];\
+                dispatch_async(dispatch_get_main_queue(), ^ \{\
+                    [self presentViewController:alert animated:YES completion:nil];\
+                \});\
+            \}\
+            else\
+            \{\
+                UIAlertView *recordalert=[[UIAlertView alloc]initWithTitle:@"Alert" message:responsecode delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil];\
+                [recordalert show];\
+            \}\
+        \}\
+        else\
+        \{\
+\
+        \}\
+    \}\
+\
+    else\
+    \{\
+        for (i=0; i<[value_diction count];i++ )\
+        \{\
+            valuedict=[value_diction objectAtIndex:i];\
+            NSLog(@"the valuedict is %@",valuedict);\
+            [arrcommentscount addObject:[valuedict objectForKey:@"comments_count"]];\
+            [arrpostcontent_video addObject:[valuedict objectForKey:@"post_content"]];\
+            [arrposttitle addObject:[valuedict objectForKey:@"post_title"]];\
+            [arrviewscount addObject:[valuedict objectForKey:@"views_count"]];\
+            [arrimageurl addObject:[valuedict objectForKey:@"imag_url"]];\
+            [arrrantid addObject:[valuedict objectForKey:@"rant_id"]];\
+\
+            [arrlikearray addObject:[valuedict objectForKey:@"like_value"]];\
+            [arrflagarray addObject:[valuedict objectForKey:@"flag_value"]];\
+            [arrdescarray addObject:[valuedict objectForKey:@"rant_description"]];\
+            if([valuedict objectForKey:@"author_name"] == [NSNull null])\
+            \{\
+                NSLog(@"&&&&&&");\
+                [arrauthor_name addObject:@"null"];\
+            \}\
+            else\
+            \{\
+                [arrauthor_name addObject:[valuedict objectForKey:@"author_name"]];\
+            \}\
+            [arrauthorid addObject:[valuedict objectForKey:@"author_id"]];\
+            if([valuedict objectForKey:@"profile_image"] == [NSNull null])\
+            \{\
+                NSLog(@"!!!!!");\
+                [arrprofileimage addObject:@"null"];\
+            \}\
+            else\
+            \{\
+                [arrprofileimage addObject:[valuedict objectForKey:@"profile_image"]];\
+            \}\
+            [arrtimesince addObject:[valuedict objectForKey:@"time-since"]];\
+        \}\
+        NSLog(@"%@%@", mainTable.delegate, mainTable.dataSource);\
+        [mainTable reloadData];        \
+    \}\
+    start = start + 10;\
+    app.homepage_arrViewsCount = arrviewscount;\
+    app.homepage_likeArray = arrlikearray;\
+    app.homepage_flagArray = arrflagarray;\
+    NSLog(@"%d connectiondidfinish\\n LikeArray %@\\n, FlagArray %@", start, app.homepage_likeArray, app.homepage_flagArray);\
+    \
+\}\
+\
+*/\cf0 \
+\
+\cf2 /*\
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error\
+\{\
+//    [activity_home stopAnimating];\
+//    activity_home.hidden = YES;\
+    dispatch_async(dispatch_get_main_queue(), ^\{\
+        \
+    AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+    [app stopLoader];\
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error Retrieving data"\
+                                                            message:[error localizedDescription]\
+                                                           delegate:nil\
+                                                  cancelButtonTitle:@"Ok"\
+                                                  otherButtonTitles:nil];\
+        [alertView show];\
+\
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;\
+    \});\
+\}\
+ */\cf0 \
+\
+\cf2 //SERVICE CALLING\cf0 \
+\
+\cf2 //[self update];\cf0 \
+\cf2 //    activity_home.hidden = NO;\cf0 \
+\cf2 //    [activity_home startAnimating];\cf0 \
+\
+\cf2 //    returnData= [[NSMutableData alloc]init];\cf0 \
+\cf2 //    NSMutableURLRequest * requests = [[NSMutableURLRequest alloc] init];\cf0 \
+\cf2 //    [requests setURL:[NSURL URLWithString:urlString]];\cf0 \
+\cf2 //    myConnection = [NSURLConnection connectionWithRequest:requests delegate:self];\cf0 \
+\cf2 //    [myConnection start];\cf0 \
+\
+\
+\cf2 /*-(void)popToSpecificViewController:(UIViewController *)controller\
+\{\
+    NSMutableArray *mutableVCArray = [NSMutableArray arrayWithArray:self.navigationController.viewControllers];\
+    NSLog(@"%@", mutableVCArray);\
+    if(mutableVCArray.count >1)\
+    \{\
+        [mutableVCArray insertObject:controller atIndex:mutableVCArray.count-1];\
+    \}\
+    [self.navigationController setViewControllers:mutableVCArray animated:NO];\
+    NSLog(@"%@", mutableVCArray);\
+    [self.navigationController popViewControllerAnimated:YES];\
+\}\
+ */\cf0 \
+\
+\
+\cf2 //                MyActivityItemProvider * message = [[MyActivityItemProvider alloc] init];\cf0 \
+\cf2 //                NSArray * activityItems;\cf0 \
+\cf2 //                UIImage * image = [UIImage imageNamed:@"icon"];\cf0 \
+\cf2 //\cf0 \
+\cf2 //                NSString *videoToShare = @"Test.mp4";\cf0 \
+\cf2 //                NSURL *videoPath = [NSURL fileURLWithPath:videoToShare];\cf0 \
+\cf2 //               if (image != nil)\cf0 \
+\cf2 //                \{\cf0 \
+\cf2 //                    activityItems = @[message, image, videoPath];\cf0 \
+\cf2 //                \}\cf0 \
+\cf2 //                else\cf0 \
+\cf2 //                \{\cf0 \
+\cf2 //                    activityItems = @[message];\cf0 \
+\cf2 //                \}\cf0 \
+\cf2 //\cf0 \
+\cf2 //                UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];\cf0 \
+\cf2 //                [self presentViewController:activityController animated:YES completion:nil];\cf0 \
+\
+\
+\
+\cf2 //    UITapGestureRecognizer * taps = [[UITapGestureRecognizer alloc] initWithTarget:self action: @selector(Top)];\cf0 \
+\cf2 //    [self.floatingButton addGestureRecognizer: taps];\cf0 \
+\cf2 //\cf0 \
+\
+\
+\
+\cf2 //-(void)update\cf0 \
+\cf2 //\{\cf0 \
+\cf2 //    //AppDelegate * app = [[UIApplication sharedApplication]delegate];\cf0 \
+\cf2 //    NSLog(@"tableView is '%@'",self.mainTable);\cf0 \
+\cf2 //   // [mainTable reloadData];\cf0 \
+\cf2 //    NSLog(@"POST TITLE -> %@", self.arrposttitle);\cf0 \
+\cf2 //    NSIndexPath *scrollIndexPath = [NSIndexPath indexPathForRow:([self.arrposttitle count]-1) inSection:0];\cf0 \
+\cf2 //    if(self.arrposttitle.count > 0)\cf0 \
+\cf2 //    \{\cf0 \
+\cf2 //        [self.mainTable scrollToRowAtIndexPath:scrollIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];\cf0 \
+\cf2 //    \}\cf0 \
+\cf2 //\}\cf0 \
+\
+\cf2 //- (void)scrollViewDidScroll:(UIScrollView *)scrollView\cf0 \
+\cf2 //\{\cf0 \
+\cf2 //    CGRect frame = self.floatingButton.frame;\cf0 \
+\cf2 //    frame.origin.y = 108.0;\cf0 \
+\cf2 //    self.floatingButton.hidden = YES;\cf0 \
+\cf2 //    self.floatingButton.frame = frame;\cf0 \
+\cf2 //    //[self.floatingButton addTarget:self action:@selector(Top) forControlEvents:UIControlEventTouchUpInside];\cf0 \
+\cf2 //    //[self.mainTable bringSubviewToFront:self.floatingButton];\cf0 \
+\cf2 //\}\cf0 \
+\
+\
+\cf2 //-(void)scrollViewDidScrollToTop:(UIScrollView *)scrollView\cf0 \
+\cf2 //\{\cf0 \
+\cf2 //    [self.floatingButton removeFromSuperview];\cf0 \
+\cf2 //    self.floatingButton.hidden = YES;\cf0 \
+\cf2 //\}\cf0 \
+\
+\
+\
+\
+\cf2 //\cf0 \
+\cf2 //-(void)Top\cf0 \
+\cf2 //\{\cf0 \
+\cf2 //    NSLog(@"moves to top");\cf0 \
+\cf2 //\}\cf0 \
+\
+\
+\
+\
+\
+\
+\cf2 /*\
+ NSURL * url = [NSURL URLWithString:urlString];\
+ request = [NSURLRequest requestWithURL:url];\
+ \
+ AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];\
+ operation.responseSerializer = [AFJSONResponseSerializer serializer];\
+ [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject)\
+ \{\
+ NSLog(@"%@", responseObject);\
+ [activity_home stopAnimating];\
+ activity_home.hidden=YES;\
+ value_diction = [responseObject valueForKey:@"response_msg"];\
+ responsecode=[responseObject valueForKey:@"response code"];\
+ app.notificationCount = [responseObject valueForKey:@"notification_count"];\
+ [UIApplication sharedApplication].applicationIconBadgeNumber = [app.notificationCount intValue];\
+ NSLog(@"The value is %@", value_diction);\
+ if ([responsecode isEqualToString:@"no_records"])\
+ \{\
+ if(!(record == 1))\
+ \{\
+ UIAlertView *recordalert=[[UIAlertView alloc]initWithTitle:@"Alert" message:responsecode delegate:self cancelButtonTitle:@"ok" otherButtonTitles: nil];\
+ [recordalert show];\
+ \}\
+ else\
+ \{\
+ \
+ \}\
+ \}\
+ else\
+ \{\
+ for (i=0; i<[value_diction count];i++ )\
+ \{\
+ valuedict=[value_diction objectAtIndex:i];\
+ NSLog(@"the valuedict is %@",valuedict);\
+ [arrcommentscount addObject:[valuedict objectForKey:@"comments_count"]];\
+ [arrpostcontent_video addObject:[valuedict objectForKey:@"post_content"]];\
+ [arrposttitle addObject:[valuedict objectForKey:@"post_title"]];\
+ [arrviewscount addObject:[valuedict objectForKey:@"viewscount"]];\
+ [arrlikecount addObject:[valuedict objectForKey:@"views_count"]];\
+ [arrimageurl addObject:[valuedict objectForKey:@"imag_url"]];\
+ [arrrantid addObject:[valuedict objectForKey:@"rant_id"]];\
+ [arrlikearray addObject:[valuedict objectForKey:@"like_value"]];\
+ [arrflagarray addObject:[valuedict objectForKey:@"flag_value"]];\
+ \
+ if([valuedict objectForKey:@"author_name"] == [NSNull null])\
+ \{\
+ NSLog(@"&&&&&&");\
+ [arrauthor_name addObject:@"null"];\
+ \}\
+ else\
+ \{\
+ [arrauthor_name addObject:[valuedict objectForKey:@"author_name"]];\
+ \}\
+ [arrauthorid addObject:[valuedict objectForKey:@"author_id"]];\
+ if([valuedict objectForKey:@"profile_image"] == [NSNull null])\
+ \{\
+ NSLog(@"!!!!!");\
+ [arrprofileimage addObject:@"null"];\
+ \}\
+ else\
+ \{\
+ [arrprofileimage addObject:[valuedict objectForKey:@"profile_image"]];\
+ \}\
+ [arrtimesince addObject:[valuedict objectForKey:@"time-since"]];\
+ \}\
+ NSLog(@"%@%@", mainTable.delegate, mainTable.dataSource);\
+ [mainTable reloadData];\
+ \}\
+ start = start + 10;\
+ app.homepage_arrViewsCount = arrlikecount;\
+ app.homepage_likeArray = arrlikearray;\
+ app.homepage_flagArray = arrflagarray;\
+ NSLog(@"%d connectiondidfinish\\n LikeArray %@\\n, FlagArray %@", start, app.homepage_likeArray, app.homepage_flagArray);\
+ \}\
+ failure:^(AFHTTPRequestOperation *operation, NSError *error)\
+ \{\
+ [activity_home stopAnimating];\
+ activity_home.hidden=YES;\
+ UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error Retrieving data"\
+ message:[error localizedDescription]\
+ delegate:nil\
+ cancelButtonTitle:@"Ok"\
+ otherButtonTitles:nil];\
+ [alertView show];\
+ \}];\
+ [operation start];\
+ */\cf0 \
+\
+\
+\cf2 //TextLayer defines the text they want to add in Video\cf0 \
+\cf2 //Text of watermark\cf0 \
+\cf2 //CATextLayer *textOfvideo=[[CATextLayer alloc] init];\cf0 \
+\cf2 // textOfvideo.string=[NSString stringWithFormat:@"Fanthem"];//text is shows the text that you want add in video.\cf0 \
+\cf2 // [textOfvideo setFont:(__bridge CFTypeRef)([UIFont fontWithName:@"American Typewriter" size:18])];\cf0 \
+\cf2 // [textOfvideo setFrame:CGRectMake(0, 0, 50, 50)];\cf0 \
+\cf2 //[textOfvideo setAlignmentMode:kCAAlignmentCenter];\cf0 \
+\cf2 //[textOfvideo setForegroundColor:(__bridge CGColorRef)([UIColor redColor])];\cf0 \
+\
+\cf2 //    CALayer *optionalLayer=[CALayer layer];\cf0 \
+\cf2 //    [optionalLayer addSublayer:textOfvideo];\cf0 \
+\cf2 //    optionalLayer.frame=CGRectMake(0, 0, sizeOfVideo.width, sizeOfVideo.height);\cf0 \
+\cf2 //    [optionalLayer setMasksToBounds:YES];\cf0 \
+\cf2 //                    UISaveVideoAtPathToSavedPhotosAlbum(destinationPath, self, @selector(video:didFinishSavingWithError:contextInfo:), nil);\cf0 \
+\
+\cf2 //[self watermark:aURL];\cf0 \
+\cf2 //                    NSURL *documentsURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];\cf0 \
+\cf2 //                    NSURL *tempURL = [documentsURL URLByAppendingPathComponent:[assetExport.outputURL lastPathComponent]];\cf0 \
+\cf2 //                    [data3 writeToURL:tempURL atomically:YES];\cf0 \
+\cf2 //UISaveVideoAtPathToSavedPhotosAlbum(tempURL.path, nil, NULL, NULL);\cf0 \
+\cf2 // [self loadCameraRollAssetToTwitter:aURL andMessage:@"test"];\cf0 \
+\
+\
+\
+\
+\
+ - (\cf4 void\cf0 )performWithAsset:(AVAsset*)asset\
+ \{\
+ \cf2 // self.watermarkLayer = nil;\cf0 \
+ CGSize videoSize;\
+ \
+ AVAssetTrack *assetVideoTrack = \cf4 nil\cf0 ;\
+ AVAssetTrack *assetAudioTrack = \cf4 nil\cf0 ;\
+ \cf2 // Check if the asset contains video and audio tracks\cf0 \
+ \cf4 if\cf0  ([[asset tracksWithMediaType:AVMediaTypeVideo] count] != \cf4 0\cf0 ) \{\
+ assetVideoTrack = [asset tracksWithMediaType:AVMediaTypeVideo][\cf4 0\cf0 ];\
+ \}\
+ \cf4 if\cf0  ([[asset tracksWithMediaType:AVMediaTypeAudio] count] != \cf4 0\cf0 ) \{\
+ assetAudioTrack = [asset tracksWithMediaType:AVMediaTypeAudio][\cf4 0\cf0 ];\
+ \}\
+ \
+ CMTime insertionPoint = kCMTimeZero;\
+ NSError *error = \cf4 nil\cf0 ;\
+ \
+ \
+ \cf2 // Step 1\cf0 \
+ \cf2 // Create a composition with the given asset and insert audio and video tracks into it from the asset\cf0 \
+ \cf4 if\cf0 (!mutableComposition) \{\
+ \
+ \cf2 // Check if a composition already exists, else create a composition using the input asset\cf0 \
+ mutableComposition = [AVMutableComposition composition];\
+ \
+ \cf2 // Insert the video and audio tracks from AVAsset\cf0 \
+ \cf4 if\cf0  (assetVideoTrack != \cf4 nil\cf0 ) \{\
+ AVMutableCompositionTrack *compositionVideoTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];\
+ [compositionVideoTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [asset duration]) ofTrack:assetVideoTrack atTime:insertionPoint error:&error];\
+ \}\
+ \cf4 if\cf0  (assetAudioTrack != \cf4 nil\cf0 ) \{\
+ AVMutableCompositionTrack *compositionAudioTrack = [mutableComposition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];\
+ [compositionAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [asset duration]) ofTrack:assetAudioTrack atTime:insertionPoint error:&error];\
+ \}\
+ \
+ \}\
+ \
+ \
+ \cf2 // Step 2\cf0 \
+ \cf2 // Create a water mark layer of the same size as that of a video frame from the asset\cf0 \
+ \cf4 if\cf0  ([[mutableComposition tracksWithMediaType:AVMediaTypeVideo] count] != \cf4 0\cf0 ) \{\
+ \
+ \cf4 if\cf0 (!mutableVideoComposition) \{\
+ \
+ \cf2 // build a pass through video composition\cf0 \
+ mutableVideoComposition = [AVMutableVideoComposition videoComposition];\
+ mutableVideoComposition.frameDuration = CMTimeMake(\cf4 1\cf0 , \cf4 30\cf0 ); \cf2 // 30 fps\cf0 \
+ mutableVideoComposition.renderSize = assetVideoTrack.naturalSize;\
+ \
+ AVMutableVideoCompositionInstruction *passThroughInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];\
+ passThroughInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, [mutableComposition duration]);\
+ \
+ AVAssetTrack *videoTrack = [mutableComposition tracksWithMediaType:AVMediaTypeVideo][\cf4 0\cf0 ];\
+ AVMutableVideoCompositionLayerInstruction *passThroughLayer = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoTrack];\
+ \
+ passThroughInstruction.layerInstructions = \cf4 @[\cf0 passThroughLayer\cf4 ]\cf0 ;\
+ mutableVideoComposition.instructions = \cf4 @[\cf0 passThroughInstruction\cf4 ]\cf0 ;\
+ \
+ \}\
+ videoSize = mutableVideoComposition.renderSize;\
+ [\cf4 self\cf0  watermarkLayerForSize:videoSize];\
+ \}\
+ \}\
+ \
+ - (CALayer*)watermarkLayerForSize:(CGSize)videoSize\
+ \{\
+ \cf2 // Create a layer for the title\cf0 \
+ CALayer *_watermarkLayer = [CALayer layer];\
+ \
+ \cf2 // Create a layer for the text of the title.\cf0 \
+ CATextLayer *titleLayer = [CATextLayer layer];\
+ titleLayer.string = \cf3 @"AVSE"\cf0 ;\
+ titleLayer.foregroundColor = [[UIColor whiteColor] CGColor];\
+ titleLayer.shadowOpacity = \cf4 0.5\cf0 ;\
+ titleLayer.alignmentMode = kCAAlignmentCenter;\
+ titleLayer.bounds = CGRectMake(\cf4 0\cf0 , \cf4 0\cf0 , videoSize.width/\cf4 2\cf0 , videoSize.height/\cf4 2\cf0 );\
+ \
+ \cf2 // Add it to the overall layer.\cf0 \
+ \
+ \cf2 //Image of watermark\cf0 \
+ \
+ UIImage *myImage=[UIImage imageNamed:\cf3 @"app-logo.png"\cf0 ];\
+ CALayer *layerCa = [CALayer layer];\
+ layerCa.contents = (\cf4 id\cf0 )myImage.CGImage;\
+ layerCa.frame = CGRectMake(\cf4 0\cf0 , \cf4 0\cf0 , \cf4 50\cf0 , \cf4 50\cf0 );\
+ layerCa.opacity = \cf4 1.0\cf0 ;\
+ \
+ [_watermarkLayer addSublayer:layerCa];\
+ \
+ [_watermarkLayer addSublayer:titleLayer];\
+ \
+ NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, \cf4 YES\cf0 )objectAtIndex:\cf4 0\cf0 ];\
+ NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];\
+ [dateFormatter setDateFormat:\cf3 @"yyyy-MM-dd_HH-mm-ss"\cf0 ];\
+ NSString *destinationPath = [documentsDirectory stringByAppendingFormat:\cf3 @"/output_%@.mov"\cf0 , [dateFormatter stringFromDate:[NSDate date]]];\
+ \
+ AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:mutableComposition presetName:AVAssetExportPresetMediumQuality];\
+ exportSession.videoComposition=mutableVideoComposition;\
+ \
+ exportSession.outputURL = [NSURL fileURLWithPath:destinationPath];\
+ exportSession.outputFileType = AVFileTypeQuickTimeMovie;\
+ [exportSession exportAsynchronouslyWithCompletionHandler:^\{\
+ \cf4 switch\cf0  (exportSession.status)\
+ \{\
+ \cf4 case\cf0  AVAssetExportSessionStatusCompleted:\
+ NSLog(\cf3 @"Export OK"\cf0 );\
+ \cf4 if\cf0  (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(destinationPath))\
+ \{\
+ NSLog(\cf3 @"%@"\cf0 , destinationPath);\
+ UISaveVideoAtPathToSavedPhotosAlbum(destinationPath, \cf4 nil\cf0 , \cf4 NULL\cf0 , \cf4 NULL\cf0 );\
+ \}\
+ \cf4 break\cf0 ;\
+ \cf4 case\cf0  AVAssetExportSessionStatusFailed:\
+ NSLog (\cf3 @"AVAssetExportSessionStatusFailed: %@"\cf0 , exportSession.error);\
+ \cf4 break\cf0 ;\
+ \cf4 case\cf0  AVAssetExportSessionStatusCancelled:\
+ NSLog(\cf3 @"Export Cancelled"\cf0 );\
+ \cf4 break\cf0 ;\
+ \}\
+ \}];\
+ \
+ \
+ \cf4 return\cf0  _watermarkLayer;\
+ \}\
+\
+\
+\
+\
+\cf2 /*\
+ AppDelegate * app = [[UIApplication sharedApplication]delegate];\
+ //    activity_home.hidden = NO;\
+ //    [activity_home startAnimating];\
+ \
+ [app ShowLoaderWithText:@"" detail:@"Please wait it may take a minute to get share with Facebook"];\
+ app.login = [[FBSDKLoginManager alloc] init];\
+ [app.login logInWithPublishPermissions:@[@"publish_actions"]\
+ handler:^(FBSDKLoginManagerLoginResult *result, NSError *error)\
+ \{\
+ if ([result.declinedPermissions containsObject:@"publish_actions"])\
+ \{\
+ //permission denied\
+ NSLog(@"Permission Denied");\
+ \}\
+ else\
+ \{\
+ NSURL *url=[NSURL URLWithString:app.videoStr];\
+ NSData *urlData=[NSData dataWithContentsOfURL:url];\
+ NSLog(@"DATA - %@", urlData);\
+ \
+ if(urlData != nil)\
+ \{\
+ NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObjectsAndKeys: urlData, @"video.mp4", @"video/quicktime", @"contentType", @"Fanthem", @"title", [NSString stringWithFormat:@"%@ by %@", app.titleStr, app.authorStr], @"description", nil];\
+ \
+ FBSDKGraphRequest *requests = [[FBSDKGraphRequest alloc]\
+ initWithGraphPath:@"me/videos"\
+ parameters:parameters\
+ HTTPMethod:@"POST"];\
+ [requests startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection,\
+ id result,\
+ NSError *error)\
+ \{\
+ if (error)\
+ \{\
+ // Process error\
+ [app stopLoader];\
+ UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"Error" message:error.description delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];\
+ [alert show];\
+ NSLog(@"%@",error.description);\
+ \}\
+ else\
+ \{\
+ // Handle the result\
+ NSLog(@"handle result %@",result);\
+ // activity_home.hidden = YES;\
+ // [activity_home stopAnimating];\
+ [app stopLoader];\
+ UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"Your Clip has been Posted Successfully" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];\
+ [alert show];\
+ \}\
+ \}];\
+ \}\
+ \}\
+ \}];\
+ */\cf0 \
+\
+\cf4 @end\cf0 \
+\
+\
+----------------\
+\cf4 330\cf0 , -\cf4 10\cf0 , \cf4 150\cf0 , \cf4 40\cf0 \
+\cf4 20\cf0 , \cf4 400\cf0 , \cf4 60\cf0 , \cf4 60\cf0 \
+\
+}
